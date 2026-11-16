@@ -1,0 +1,22 @@
+name: Extension CI
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  javascript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check manifest JSON
+        run: node -e "JSON.parse(require('fs').readFileSync('Extension/manifest.json','utf8'))"
+      - name: Run offline extension regression tests
+        run: |
+          node Tests/unit/fill_engine.test.js
+          node Tests/regression/message_router.test.js
