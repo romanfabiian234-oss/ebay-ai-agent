@@ -61,7 +61,7 @@ def clamp(v, lo, hi):
     return min(hi, max(lo, v))
 
 with sync_playwright() as p:
-    browser=p.chromium.launch(headless=True, executable_path='/usr/bin/chromium', args=['--no-sandbox'])
+    browser=p.chromium.launch(headless=True, args=['--no-sandbox'])
     # Auto CSS fallback grows on larger pages and still stays fully inside small pages.
     for width,height in [(1440,900),(1100,760),(900,650),(430,700),(360,600)]:
         page=browser.new_page(viewport={'width':width,'height':height})

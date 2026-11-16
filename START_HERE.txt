@@ -1,48 +1,24 @@
-Marketplace AI Listing Filler V8.23.11
+eBay AI Agent — first start
 
-FIRST RUN
-1. Open START.command.
-2. If this Mac is already configured, START reuses Application Support settings and macOS Keychain secrets automatically.
-3. If this is a new Mac, START asks for normal settings and hidden secrets once in Terminal.
-4. In Chrome, load/reload the installed Extension folder shown by START.command.
+Platform: macOS, Python 3.9+, Google Chrome.
 
-SECURE LOCAL CONNECTION
-- V8.23.11 uses Chrome Native Messaging between the Extension and this Mac.
-- V8.23.11 records each AI request in a local cost ledger using provider-reported token details when available. The OpenAI dashboard remains the final billing source.
-- V8.23.11 can also use local macOS Vision OCR in parallel with normal GPT analysis to independently confirm high-confidence label facts and avoid unnecessary paid strict re-checks; OCR never creates a missing answer or overrides a conflict.
-- No pairing code is copied, pasted, stored in Chrome, or written into the Extension.
-- Chrome permits only the fixed Marketplace AI Listing Filler extension ID to start the installed native host.
-- The native host uses a separate random internal credential stored in the macOS data-protection Keychain to reach the localhost Backend.
-- A legacy .local-pairing-secret file from older versions is migrated into Keychain and removed.
+1. In Terminal, run: bash START.command
+2. Enter settings and your own AI API key when prompted. Secret input is hidden.
+3. Open chrome://extensions → Developer mode → Load unpacked.
+4. Load ONLY this installed folder (Cmd+Shift+G opens the path field):
+   ~/Library/Application Support/eBay AI Listing Filler/Extension
+5. Refresh your eBay draft, open the extension's Control Panel and try one draft.
+6. Review every filled value. Publish manually.
 
-SECRETS
-GPT API Key, Claude API Key, eBay Client Secret and OAuth refresh tokens stay in macOS Keychain.
-They are never included in the ZIP, normal settings JSON, Chrome storage, logs, or marketplace pages.
+Updates: run the NEW source folder's START.command, reload the installed
+extension in Chrome, and refresh marketplace tabs. Do not load a second copy
+from the downloaded source folder. Saved settings and Keychain secrets persist.
 
-NORMAL START
-Open START.command. It installs/updates Backend, Extension and the Native Messaging host, starts Backend, then reuses saved settings.
+Settings: bash START.command --setup
+Remove service: bash Tools/uninstall_backend.command
+Then remove the extension in Chrome. Saved settings/keys are preserved.
 
-CHANGE SETTINGS
-START.command --setup
-or
-Tools/settings.command
-
-CHROME EXTENSION FOLDER
-~/Library/Application Support/eBay AI Listing Filler/Extension
-
-DEPOP / POSHMARK WORKFLOW
-1. Open the eBay draft and destination Depop/Poshmark create-listing page side by side.
-2. To transfer all photos, leave eBay selection empty and drag the floating “Drag N photos” handle.
-3. To transfer only chosen photos, use eBay’s own Select tool; the handle changes to “Drag N selected photos”.
-4. Drop on the destination create-listing page while the extension Drop overlay is visible. If the destination uploader is still loading, V8.23.11 keeps the short-lived transfer session and waits for the marketplace page/uploader to become ready.
-5. Wait for the verified upload status. Both destinations use their real multiple-file input. Poshmark also confirms the exact “Select a Covershot” → “Apply” photo modal before success. Depop receives up to 8 photos; Poshmark up to 16.
-6. Use Read Photos + Listing Fields to inspect the current eBay/Depop/Poshmark snapshot, or use Fill All Current Listing.
-7. Review the result and publish manually.
-
-AFTER EXTENSION UPDATE
-If a marketplace tab was already open when you Reload/replace the extension, refresh that tab once. V8.23.11 shows a clear refresh message instead of the raw “Extension context invalidated” error.
-
-SAFETY
-- The Extension never auto-publishes, auto-deletes, or pays. Photo transfer runs only after your physical drag-and-drop gesture and only from validated i.ebayimg.com listing images.
-- eBay: Title, Description, Condition, Category, Price, Quantity, Shipping, UPC and MPN remain protected.
-- Depop/Poshmark: Category and Condition may be filled as destination-platform questions; Title, Description, Price, Quantity, Shipping, Availability, payment/offer controls, Boost/Promote, UPC/MPN and publish/delete actions remain protected.
+The version shown by START and Backend comes from Extension/manifest.json.
+The installer sets up a per-user LaunchAgent and a Native Messaging host.
+API analysis may cost money; a chat subscription is not an API key.
+Read README.md for installation, privacy, troubleshooting and complete removal.

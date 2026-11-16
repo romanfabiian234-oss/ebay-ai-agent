@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from pathlib import Path
 import json
+import re
 
 ROOT=Path(__file__).resolve().parents[2]
 EXT=ROOT/'Extension'
@@ -9,7 +10,7 @@ def req(cond,msg):
     if not cond: raise AssertionError(msg)
 
 manifest=json.loads((EXT/'manifest.json').read_text())
-req(manifest['version']=='8.23.24','manifest version')
+req(manifest['version'] == manifest.get('version_name') and bool(re.fullmatch(r'[0-9]+(?:\.[0-9]+){0,3}', manifest['version'])),'manifest version')
 req('https://i.ebayimg.com/*' in manifest.get('host_permissions',[]),'exact eBay image host permission missing')
 for host in ['https://vinted.com/*','https://*.vinted.com/*']:
     req(host in manifest.get('host_permissions',[]),f'Vinted host permission missing: {host}')

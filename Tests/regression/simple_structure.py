@@ -12,7 +12,7 @@ platforms={p.name for p in (EXT/'platforms').glob('*.js')}; assert platforms=={'
 ui_dirs={p.name for p in (EXT/'ui').iterdir() if p.is_dir()}; assert ui_dirs=={'registry','popup','progress','photo-selection','queue-panel','queue-controls','assistant-panel','status','settings','notifications','diagnostics','fill-actions','review','theme','text-import','connections','control-panel','photo-transfer'},ui_dirs
 assert not [p for p in (EXT/'ui').iterdir() if p.is_file()], 'UI root must contain containers only'
 shared={p.name for p in (EXT/'shared').glob('*.js')}; assert shared=={'config.js','messages.js','storage.js','logger.js','usage.js','settings_policy.js','connections.js','diagnostics.js','photo_state.js','question_preferences.js','draft_state.js','events.js','panel_preferences.js','text_utils.js','app_state.js'},shared
-manifest=json.loads((EXT/'manifest.json').read_text()); assert manifest['version']=='8.23.21' and manifest['version_name']=='8.23.21' and 'Beta' not in manifest['name']
+manifest=json.loads((EXT/'manifest.json').read_text()); assert bool(re.fullmatch(r'[0-9]+(?:\.[0-9]+){0,3}', manifest['version'])) and manifest['version_name']==manifest['version'] and 'Beta' not in manifest['name']
 assert 'default_popup' not in manifest.get('action',{})
 main=next(entry for entry in manifest['content_scripts'] if 'content.js' in entry.get('js',[])); assert not any('blocks/' in x or 'flow/' in x or 'runtime/' in x for x in main['js'])
 assert (EXT/'content.js').read_text().count('chrome.runtime.onMessage.addListener')==1

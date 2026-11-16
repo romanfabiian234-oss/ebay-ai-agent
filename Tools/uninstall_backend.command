@@ -9,5 +9,5 @@ launchctl bootout "gui/$UID" "$PLIST" >/dev/null 2>&1 || true
 /usr/bin/pkill -f "$BACKEND_DIR/server.py" >/dev/null 2>&1 || true
 rm -f "$PLIST" "$NATIVE_HOST_MANIFEST"
 rm -rf "$BACKEND_DIR"
-echo "V8.23.7 background service removed."
+echo "Background service removed."
 echo "Your saved settings and Keychain secrets were preserved for future versions."

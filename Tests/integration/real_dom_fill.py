@@ -4,7 +4,7 @@ ROOT=Path(__file__).resolve().parents[2]; EXT=ROOT/'Extension'; FIXTURE=ROOT/'Te
 def req(c,m):
     if not c: raise AssertionError(m)
 with sync_playwright() as p:
-    browser=p.chromium.launch(headless=True, executable_path='/usr/bin/chromium', args=['--no-sandbox'])
+    browser=p.chromium.launch(headless=True, args=['--no-sandbox'])
     page=browser.new_page(viewport={'width':1200,'height':900}); page.set_content(FIXTURE.read_text())
     for rel in ['shared/config.js','core/policy.js','core/snapshot.js','core/verify.js','core/fill.js']:
         page.add_script_tag(content=(EXT/rel).read_text())

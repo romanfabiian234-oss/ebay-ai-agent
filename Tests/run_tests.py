@@ -1,62 +1,33 @@
 #!/usr/bin/env python3
+"""Run all offline checks; --browser also runs Playwright DOM integrations."""
+import argparse
+import json
 from pathlib import Path
-import subprocess,sys
-ROOT=Path(__file__).resolve().parents[1]
-steps=[
- ['node','Tests/unit/fill_engine.test.js'],
- ['node','Tests/unit/marketplace_fill_engine.test.js'],
- ['node','Tests/unit/match_policy.test.js'],
- ['node','Tests/unit/fast_fill_support.test.js'],
- ['node','Tests/unit/photo_evidence_policy.test.js'],
- ['node','Tests/unit/root_cause_accuracy.test.js'],
- ['node','Tests/unit/ai_repair_efficiency.test.js'],
- ['node','Tests/unit/analysis_request_budget.test.js'],
- ['node','Tests/unit/analysis_singleflight.test.js'],
- ['node','Tests/unit/adaptive_vision_detail.test.js'],
- ['node','Tests/unit/local_evidence_engine.test.js'],
- ['node','Tests/unit/micro_repair_contract.test.js'],
- ['node','Tests/unit/repair_telemetry.test.js'],
- ['node','Tests/unit/fast_strict_verification.test.js'],
- ['node','Tests/unit/smart_strict_verification.test.js'],
- ['node','Tests/unit/fast_local_ocr_verification.test.js'],
- ['node','Tests/unit/fast_local_ocr_pipeline.test.js'],
- ['node','Tests/unit/shoe_ocr_direct_facts.test.js'],
- ['node','Tests/unit/regional_size_ocr.test.js'],
- ['node','Tests/unit/direct_label_live_recovery.test.js'],
- ['node','Tests/unit/diagnostic_highres.test.js'],
- ['node','Tests/unit/ocr_cv_pipeline.test.js'],
- ['node','Tests/unit/ai_cost_optimization.test.js'],
- ['node','Tests/unit/api_cost_accounting.test.js'],
- ['node','Tests/unit/api_transport_accounting.test.js'],
- ['node','Tests/unit/queue_stability.test.js'],
- ['node','Tests/unit/queue_transition_stability.test.js'],
- ['node','Tests/regression/message_router.test.js'],
- ['node','Tests/regression/real_draft_evidence.test.js'],
- [sys.executable,'Tests/regression/evidence_accuracy.py'],
- [sys.executable,'Tests/regression/hidden_action_audit.py'],
- [sys.executable,'Tests/regression/ocr_cv_architecture.py'],
- [sys.executable,'Tests/regression/marketplace_adapters.py'],
- [sys.executable,'Tests/regression/photo_drag_transfer.py'],
- [sys.executable,'Tests/regression/final_state_stability.py'],
- [sys.executable,'Tests/regression/simple_structure.py'],
- [sys.executable,'Tests/regression/dead_code_cleanup.py'],
- [sys.executable,'Tests/regression/ui_container_structure.py'],
- [sys.executable,'Tests/regression/popup_script_scope.py'],
- [sys.executable,'Tests/regression/csp_and_control_window.py'],
- [sys.executable,'Tests/regression/setup_startup.py'],
- [sys.executable,'Tests/regression/state_and_safety.py'],
- [sys.executable,'Tests/regression/setup_persistence.py'],
- [sys.executable,'Tests/regression/first_run_start.py'],
- [sys.executable,'Tests/regression/terminal_setup.py'],
- [sys.executable,'Tests/regression/native_messaging.py'],
- [sys.executable,'Tests/regression/hotkey_lifecycle.py'],
- [sys.executable,'Tests/integration/real_dom_fill.py'],
- [sys.executable,'Tests/integration/show_more_readiness.py'],
- [sys.executable,'Tests/integration/ui_containers_dom.py'],
- [sys.executable,'Tests/integration/photo_drag_transfer_dom.py'],
- [sys.executable,'Tests/release/release.py'],
-]
-for cmd in steps:
-    r=subprocess.run(cmd,cwd=ROOT)
-    if r.returncode: raise SystemExit(r.returncode)
-print('ALL V8.23.21 CURRENT TESTS PASSED')
+import subprocess
+import sys
+
+ROOT = Path(__file__).resolve().parents[1]
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--browser', action='store_true', help='Include Playwright browser tests')
+args = parser.parse_args()
+steps = []
+for path in sorted((ROOT / 'Tests').rglob('*')):
+    if path.name.endswith(('.test.js', '.test.cjs')):
+        steps.append(['node', str(path.relative_to(ROOT))])
+for path in sorted((ROOT / 'Tests/regression').glob('*.py')):
+    if path.name == 'csp_and_control_window.py' and not args.browser:
+        continue
+    steps.append([sys.executable, '-B', str(path.relative_to(ROOT))])
+if args.browser:
+    steps.extend(['node', str(p.relative_to(ROOT))]
+                 for p in sorted((ROOT / 'Tests/integration').glob('*.cjs')))
+    steps.extend([sys.executable, '-B', str(p.relative_to(ROOT))]
+                 for p in sorted((ROOT / 'Tests/integration').glob('*.py')))
+steps.append([sys.executable, '-B', 'Tests/release/release.py'])
+for command in steps:
+    print('RUN', ' '.join(command), flush=True)
+    result = subprocess.run(command, cwd=ROOT)
+    if result.returncode:
+        raise SystemExit(result.returncode)
+version = json.loads((ROOT / 'Extension/manifest.json').read_text())['version']
+print(f'ALL V{version} CHECKS PASSED ({len(steps)} scripts; browser={args.browser})')

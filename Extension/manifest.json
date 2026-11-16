@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Marketplace AI Listing Filler V8.23.24",
-  "version": "8.23.24",
-  "version_name": "8.23.24",
+  "name": "Marketplace AI Listing Filler V8.23.25",
+  "version": "8.23.25",
+  "version_name": "8.23.25",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwFbH8YO89vzvpX6mZkKNOdjtl0JykRIW2F4+iY5IsSc13KE18RC/wwzHEkeBqGjhQbwB+kkHwSxLAmpWLEJP1na9B86q+5FBiNzC5e7guINDFQn4HEHIyrE0Rd3LRpdFcWROLZjV3+WYrvlgEfDXFYUARNcYGsMyujnKETQh2vjD4vrCHQ6MMBXJylI39djyTW4Ou8m4P+oVQpt0RDEy0ufrYD6JijhyMMaOFrGBFI8KrcPtNVMDalWa+hbafamNXYiQAgAFznoaC2lZyVxgkJpb9z/61jbJBQj3+jvKbpaFurOk4p3/R5tTDfkYXRc1ErvN/DCDiDmjwAEaGb3/iQIDAQAB",
   "description": "AI listing-field filler for eBay, Depop, and Poshmark with verified Fill Engine, plus mouse photo transfer from eBay to Depop, Poshmark, Vinted, and ChatGPT; no publishing.",
   "icons": {

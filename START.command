@@ -7,6 +7,7 @@ BACKEND_SOURCE="$PACKAGE_DIR/Backend/server.py"
 OCR_HELPER_SOURCE="$PACKAGE_DIR/Backend/ocr.js"
 NATIVE_HOST_SOURCE="$PACKAGE_DIR/Backend/native_host.py"
 KEYCHAIN_SOURCE="$PACKAGE_DIR/Backend/keychain.py"
+PREPROCESS_SOURCE="$PACKAGE_DIR/Backend/image_preprocess.js"
 EXTENSION_SOURCE="$PACKAGE_DIR/Extension"
 APP_ROOT="$HOME/Library/Application Support/eBay AI Listing Filler"
 BACKEND_DIR="$APP_ROOT/backend"
@@ -78,7 +79,7 @@ if [[ -z "$PYTHON_BIN" || ! -x "$PYTHON_BIN" ]]; then
   exit 1
 fi
 
-for required in "$BACKEND_SOURCE" "$OCR_HELPER_SOURCE" "$NATIVE_HOST_SOURCE" "$KEYCHAIN_SOURCE" "$EXTENSION_SOURCE/manifest.json"; do
+for required in "$BACKEND_SOURCE" "$OCR_HELPER_SOURCE" "$NATIVE_HOST_SOURCE" "$KEYCHAIN_SOURCE" "$PREPROCESS_SOURCE" "$EXTENSION_SOURCE/manifest.json"; do
   if [[ ! -e "$required" ]]; then
     echo "Required project file is missing: $required"
     exit 1
@@ -89,7 +90,8 @@ if [[ ! -x "/usr/bin/osascript" ]]; then
   exit 1
 fi
 
-echo "eBay AI Agent V8.23.7"
+APP_VERSION="$("$PYTHON_BIN" -c 'import json,sys; print(json.load(open(sys.argv[1]))["version"])' "$EXTENSION_SOURCE/manifest.json")"
+echo "eBay AI Agent V$APP_VERSION"
 echo "START.command is the only installer/start/setup entry point."
 echo
 
@@ -120,6 +122,7 @@ fi
 /usr/bin/rsync -a --delete "$EXTENSION_SOURCE/" "$EXTENSION_DIR/"
 cp "$BACKEND_SOURCE" "$BACKEND_DIR/server.py"
 cp "$OCR_HELPER_SOURCE" "$BACKEND_DIR/ocr.js"
+cp "$PREPROCESS_SOURCE" "$BACKEND_DIR/image_preprocess.js"
 cp "$NATIVE_HOST_SOURCE" "$BACKEND_DIR/native_host.py"
 cp "$KEYCHAIN_SOURCE" "$BACKEND_DIR/keychain.py"
 chmod 600 "$BACKEND_DIR/server.py" "$BACKEND_DIR/keychain.py"

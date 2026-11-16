@@ -1,4 +1,4 @@
-# Security — V8.23.14
+# Security
 
 ## Secrets
 
@@ -29,7 +29,7 @@ The local usage ledger stores request metadata, model/stage, token counts, calcu
 
 ## Marketplace host permissions
 
-V8.23.14 continues to use only the required eBay/Depop/Poshmark HTTPS host patterns and does not request `<all_urls>`.
+The exact host list is in `Extension/manifest.json`: eBay (including supported regional hosts and i.ebayimg.com), Depop, Poshmark, Vinted, chatgpt.com and chat.openai.com. The extension does not request `<all_urls>`. ChatGPT and Vinted are photo-transfer destinations, not complete marketplace Fill integrations. Review Chrome's permission prompt before loading the extension.
 
 ## Local OCR verification boundary
 
