@@ -1,0 +1,6 @@
+8.23.22 ChatGPT photo transfer
+PASS JavaScript syntax for changed modules and browser fixture.
+PASS Tests/unit/chatgpt_photo_controls.test.cjs
+PASS Tests/regression/photo_drag_transfer.py
+NOT RUN Tests/integration/chatgpt_photo_transfer.cjs: Chromium unavailable; browser download timed out.
+NOT RUN signed-in live ChatGPT upload.

@@ -1,0 +1,5 @@
+PASS ebay_gallery_count.test.cjs (including before/after reproduction)
+PASS chatgpt_photo_controls.test.cjs
+PASS regression/photo_drag_transfer.py
+PASS node --check for changed production JavaScript
+NOT RUN authenticated live site test

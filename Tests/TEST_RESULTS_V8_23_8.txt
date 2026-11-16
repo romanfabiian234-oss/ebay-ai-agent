@@ -1,0 +1,37 @@
+TEST RESULTS — V8.23.8
+
+PASS — Smart Local OCR Verification unit/regression coverage
+- only Brand/Size/Material/Origin/Garment Care/Model/Product Line are eligible
+- GPT must already have a supported answer; OCR never creates a missing normal-Fill answer
+- primary support must be a physical label and OCR must overlap the same cited photo
+- high-confidence direct OCR confirmation can satisfy the independent-verification requirement
+- Color/Style/Vintage and other visual/ambiguous fields are excluded
+- conflicting OCR does not overwrite GPT and remains eligible for strict GPT verification
+- low-confidence or different-photo OCR does not suppress strict GPT verification
+- pipeline wiring verified: same-photo confirmation can remove pass two, while OCR conflicts remain in the bounded GPT recovery request
+
+PASS — reliable API cost accounting unit test
+- cached/cache-write/uncached/output/reasoning details remain separated correctly
+- reasoning tokens are not double charged
+- long-context GPT-5.6 pricing remains covered
+- uncertain transport reservation and explicit 4xx handling remain covered
+- item summaries do not double-count request spend
+
+PASS — AI transport accounting integration-style unit test
+- one request ledger record per upstream request
+- client/provider/proxy request IDs retained
+- provider usage replaces the preflight reservation when available
+- API secret is not copied into the browser proxy payload
+
+PASS — all 31 current non-browser unit/regression/release steps (verified individually/current suite)
+PASS — real Chromium DOM Fill
+PASS — Chromium Show More readiness
+PASS — Chromium photo transfer assertions
+PASS — release/security gate: 28 production JS syntax checks, Native Messaging/Keychain boundary, protected fields/actions, and secret scan
+
+KNOWN TEST INFRASTRUCTURE ISSUE
+The existing Chromium photo-transfer integration prints PASS after completing all assertions but keeps a Playwright/Chromium teardown handle alive when run under a bounded outer runner; the process therefore requires timeout cleanup. This pre-existing lifecycle issue is unchanged by V8.23.8 and does not affect the asserted photo-transfer behavior.
+
+REAL-MAC VALIDATION STILL REQUIRED
+- The new verifier logic is covered with deterministic OCR fixtures, but this Linux test environment cannot execute macOS Vision against a live eBay draft. Verify on the target Mac that OCR latency overlaps the primary GPT request and that clear label fields reduce the strict GPT field count as expected.
+- No live OpenAI request was made by the test suite, so no money was spent to validate billing. Reconcile the local request ledger against OpenAI Dashboard after installing V8.23.8.

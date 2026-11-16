@@ -1,0 +1,73 @@
+TEST RESULTS — V8.23.14
+
+Status: PASS for all constituent current tests. Real eBay/API billing validation for V8.23.14 is still required.
+
+Root cause reproduced from the V8.23.13 shoe recording:
+- The physical shoe label contains direct facts equivalent to: 9 / 2E / LEATHER UPPER / SYNTHETIC LINING / MAN MADE SOLE / MADE IN CHINA.
+- V8.23.13 achieved the one-primary-request cost target on that real run, but some corresponding eBay fields remained blank.
+- Code audit confirmed OCR had generic Size/Material/Origin handling but no deterministic shoe-component model, and normal Fill did not locally recover a missing answer from strong OCR evidence.
+
+New V8.23.14 regression:
+- Tests/unit/shoe_ocr_direct_facts.test.js — PASS
+  * US Shoe Size = 9 from a shoe-label 9 / 2E pair.
+  * Shoe Width = 2E.
+  * Upper Material = Leather from LEATHER UPPER.
+  * Lining Material = Synthetic from SYNTHETIC LINING.
+  * Outsole Material = Synthetic from MAN MADE SOLE.
+  * Country of Origin = China from MADE IN CHINA.
+  * component materials do not leak into generic whole-item Material.
+  * bare 9 / 2E outside clear shoe-label context is rejected.
+  * weak OCR is rejected.
+  * a value absent from current eBay options is rejected.
+  * strong missing direct facts recover locally after the primary GPT pass with one paid GPT request.
+  * GPT↔OCR conflicts retain one bounded independent GPT repair and unresolved disagreement stays blank for manual review.
+
+AI/OCR/cost regression:
+- fast_local_ocr_pipeline.test.js — PASS
+  * OCR hints still assist primary GPT.
+  * strong missing direct facts can recover locally with exact-option validation.
+  * no-evidence missing fields do not retry.
+  * conflicts and rejected strict candidates retain bounded GPT repair.
+- fast_local_ocr_verification.test.js — PASS.
+- smart_strict_verification.test.js — PASS.
+- ai_cost_optimization.test.js — PASS.
+- ai_repair_efficiency.test.js — PASS.
+- fast_strict_verification.test.js — PASS.
+- evidence_accuracy.py — PASS.
+
+Core/unit/regression coverage observed PASS:
+- shared Fill Engine / marketplace Fill safety / matching — PASS.
+- photo evidence policy / strict support / root-cause guards — PASS.
+- API cost accounting / transport accounting — PASS.
+- Queue stability / Queue transition stability — PASS.
+- message router / real draft evidence — PASS.
+- marketplace adapters / photo-transfer architecture — PASS.
+- final-state / simple structure / dead-code — PASS.
+- UI ownership regression — PASS after making its expected file list order-independent; production code was not implicated.
+- popup scope / Control Panel / setup / persistence / Native Messaging / hotkeys — PASS.
+
+Chromium integration tests executed separately after the aggregate runner reached the environment time limit:
+- real_dom_fill.py — PASS.
+- show_more_readiness.py — PASS.
+- ui_containers_dom.py — PASS.
+- photo_drag_transfer_dom.py — PASS.
+
+Release gate:
+- Tests/release/release.py — PASS.
+- 71 production JS syntax checks — PASS.
+- Backend Python syntax — PASS.
+- shell syntax — PASS.
+- Native Messaging / fixed extension origin — PASS.
+- device-only macOS Keychain boundary — PASS.
+- protected fields / no auto-publish boundary — PASS.
+- credential/secret literal scan — PASS.
+
+Aggregate runner note:
+- The first full Tests/run_tests.py pass exposed a nondeterministic order assumption inside ui_container_structure.py; the test was corrected to compare the same allowed canvas owners without filesystem-order dependence and then passed.
+- A later aggregate run reached the execution-time ceiling around the slow Chromium stage. The remaining Chromium/release constituents were executed directly and all passed. No known failing constituent test remains.
+
+Still requires real validation:
+- Run V8.23.14 on the same type of eBay shoe draft.
+- Confirm the normal case remains one GPT request and roughly the V8.23.13 token/cost range rather than returning to a broad second GPT call.
+- Confirm the direct shoe fields visible on the label are now filled when their live eBay options contain the OCR values.
+- Compare final field accuracy against the photos before considering Problem 2.5 closed.

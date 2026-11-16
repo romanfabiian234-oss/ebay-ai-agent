@@ -1,0 +1,187 @@
+{
+  "manifest_version": 3,
+  "name": "Marketplace AI Listing Filler V8.23.24",
+  "version": "8.23.24",
+  "version_name": "8.23.24",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwFbH8YO89vzvpX6mZkKNOdjtl0JykRIW2F4+iY5IsSc13KE18RC/wwzHEkeBqGjhQbwB+kkHwSxLAmpWLEJP1na9B86q+5FBiNzC5e7guINDFQn4HEHIyrE0Rd3LRpdFcWROLZjV3+WYrvlgEfDXFYUARNcYGsMyujnKETQh2vjD4vrCHQ6MMBXJylI39djyTW4Ou8m4P+oVQpt0RDEy0ufrYD6JijhyMMaOFrGBFI8KrcPtNVMDalWa+hbafamNXYiQAgAFznoaC2lZyVxgkJpb9z/61jbJBQj3+jvKbpaFurOk4p3/R5tTDfkYXRc1ErvN/DCDiDmjwAEaGb3/iQIDAQAB",
+  "description": "AI listing-field filler for eBay, Depop, and Poshmark with verified Fill Engine, plus mouse photo transfer from eBay to Depop, Poshmark, Vinted, and ChatGPT; no publishing.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "tabs",
+    "webRequest",
+    "clipboardRead",
+    "clipboardWrite",
+    "nativeMessaging"
+  ],
+  "host_permissions": [
+    "https://*.ebay.com/*",
+    "https://*.ebay.ca/*",
+    "https://*.ebay.co.uk/*",
+    "https://i.ebayimg.com/*",
+    "https://depop.com/*",
+    "https://*.depop.com/*",
+    "https://poshmark.com/*",
+    "https://*.poshmark.com/*",
+    "https://vinted.com/*",
+    "https://*.vinted.com/*",
+    "https://chatgpt.com/*",
+    "https://chat.openai.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Open Marketplace AI Control Panel",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://depop.com/*",
+        "https://*.depop.com/*",
+        "https://poshmark.com/*",
+        "https://*.poshmark.com/*",
+        "https://vinted.com/*",
+        "https://*.vinted.com/*",
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*"
+      ],
+      "js": [
+        "ui/registry/registry.js",
+        "ui/photo-transfer/photo-transfer.js",
+        "platforms/photo_drop_early.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "https://vinted.com/*",
+        "https://*.vinted.com/*"
+      ],
+      "js": [
+        "ui/registry/registry.js",
+        "ui/photo-transfer/photo-transfer.js",
+        "platforms/common.js",
+        "platforms/photo_transfer.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*"
+      ],
+      "js": [
+        "ui/registry/registry.js",
+        "ui/photo-transfer/photo-transfer.js",
+        "platforms/common.js",
+        "platforms/photo_transfer.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "https://*.ebay.com/*",
+        "https://*.ebay.ca/*",
+        "https://*.ebay.co.uk/*",
+        "https://depop.com/*",
+        "https://*.depop.com/*",
+        "https://poshmark.com/*",
+        "https://*.poshmark.com/*"
+      ],
+      "js": [
+        "shared/config.js",
+        "shared/messages.js",
+        "shared/logger.js",
+        "ui/registry/registry.js",
+        "ui/notifications/notifications.js",
+        "ui/progress/progress.js",
+        "ui/assistant-panel/assistant-panel.js",
+        "ui/photo-transfer/photo-transfer.js",
+        "shared/storage.js",
+        "shared/events.js",
+        "shared/panel_preferences.js",
+        "ui/control-panel/control-panel.js",
+        "platforms/common.js",
+        "platforms/ebay_photos.js",
+        "platforms/depop.js",
+        "platforms/poshmark.js",
+        "platforms/ebay_queue_dom.js",
+        "core/policy.js",
+        "core/snapshot.js",
+        "platforms/photo_transfer.js",
+        "core/verify.js",
+        "core/fill.js",
+        "content.js",
+        "ui/queue-panel/queue-panel.js",
+        "modes/queue_page.js"
+      ],
+      "css": [
+        "ui/queue-panel/queue-panel.css",
+        "ui/control-panel/control-panel.css"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "commands": {
+    "autopilot-current-draft": {
+      "suggested_key": {
+        "default": "Alt+Shift+A",
+        "mac": "MacCtrl+Shift+A"
+      },
+      "description": "Autopilot current eBay draft."
+    },
+    "toggle-ai-queue": {
+      "suggested_key": {
+        "default": "Alt+Shift+Q",
+        "mac": "MacCtrl+Shift+Q"
+      },
+      "description": "Start or safely stop the selected AI Queue."
+    },
+    "open-review": {
+      "suggested_key": {
+        "default": "Alt+Shift+R",
+        "mac": "MacCtrl+Shift+R"
+      },
+      "description": "Open Review for the current eBay item."
+    },
+    "open-control-window": {
+      "suggested_key": {
+        "default": "Alt+Shift+O",
+        "mac": "MacCtrl+Shift+O"
+      },
+      "description": "Open the compact Marketplace AI Agent control window."
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "ui/popup/popup.html"
+      ],
+      "matches": [
+        "https://*.ebay.com/*",
+        "https://*.ebay.ca/*",
+        "https://*.ebay.co.uk/*",
+        "https://depop.com/*",
+        "https://*.depop.com/*",
+        "https://poshmark.com/*",
+        "https://*.poshmark.com/*"
+      ]
+    }
+  ]
+}

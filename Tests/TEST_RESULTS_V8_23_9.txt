@@ -1,0 +1,43 @@
+TEST RESULTS — V8.23.9
+
+PASS — UI container structure
+- UI root contains containers only: popup, progress, photo-selection, queue-panel, assistant-panel, status, settings, notifications
+- Manifest loads the new Queue panel paths
+- in-page Control Panel opens ui/popup/popup.html
+- on-demand Helper loads notifications + progress + assistant-panel before platforms/ebay_helper.js
+- old toast/progress/assistant-style ownership was removed from the mixed Helper runtime and delegated to UI containers
+
+PASS — Chromium UI container rendering
+- notification show/hide
+- progress stage/message/timer surface + cleanup
+- Assistant stylesheet installs once
+- status text/tone
+- dark/light theme application
+- photo source counter and checklist rendering
+
+PASS — 35 standard current tests excluding the known photo-transfer Playwright teardown case
+- all unit/regression tests
+- real Chromium DOM Fill
+- Chromium Show More readiness
+- Chromium UI containers
+- release/security gate
+
+PASS — Chromium photo-transfer functional assertions
+- single-shot Depop upload
+- Poshmark Covershot Apply commit
+- delayed eBay native selection sync
+- ordered selected-photo payload
+- lazy gallery recovery
+
+KNOWN TEST INFRASTRUCTURE ISSUE
+The existing photo-transfer Playwright integration can keep a Chromium/driver teardown handle alive under the outer test runner and eventually emit EPIPE when the runner timeout kills it. Running the same test with process exit only after every assertion passes confirms the functional assertions. This is a test-shutdown issue, not a UI-path failure.
+
+PASS — release/security gate
+- 34 JavaScript syntax checks
+- Python/shell syntax
+- Native Messaging and device-only Keychain boundary
+- protected fields/actions
+- secret literal scan
+
+REAL BROWSER VALIDATION STILL RECOMMENDED
+After installing V8.23.9, refresh already-open marketplace tabs once and verify the Control Panel, Queue panel and Helper/Review panel visually on the target Mac. The automated DOM coverage validates the container behavior but cannot reproduce every live eBay layout variation.

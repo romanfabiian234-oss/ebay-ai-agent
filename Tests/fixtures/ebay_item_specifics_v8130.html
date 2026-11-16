@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>eBay Item Specifics Beta 96 fixture</title>
+<style>
+  body { font-family: Arial, sans-serif; }
+  .smry.summary__attributes { width: 720px; }
+  [data-testid="attribute"] { min-height: 54px; border-bottom: 1px solid #ddd; display: flex; gap: 16px; align-items: center; }
+  .summary__attributes--label { width: 220px; }
+  .summary__attributes--value { min-width: 360px; position: relative; }
+  button, input, select { min-width: 100px; min-height: 32px; }
+  [role="listbox"] { display: none; position: relative; min-width: 220px; min-height: 40px; border: 1px solid #777; padding: 4px; }
+  [role="option"], [role="menuitemcheckbox"] { display: block; min-width: 180px; margin: 2px; }
+</style>
+</head>
+<body>
+<section id="item-specifics-section">
+  <div class="smry summary__attributes">
+    <div data-testid="attribute" id="row-brand">
+      <div class="summary__attributes--label"><label class="field__label">Brand *</label></div>
+      <div class="summary__attributes--value">
+        <button id="brand-control" name="attributes.Brand" aria-haspopup="listbox" aria-controls="brand-menu" aria-expanded="false"><span class="fake-menu-button__button-text">Select</span></button>
+        <div id="brand-menu" role="listbox">
+          <button role="option" aria-selected="false">Gucci</button>
+          <button role="option" aria-selected="false">Nike</button>
+        </div>
+      </div>
+    </div>
+    <div data-testid="attribute" id="row-color">
+      <div class="summary__attributes--label"><label class="field__label">Color</label></div>
+      <div class="summary__attributes--value">
+        <button id="color-control" name="attributes.Color" aria-haspopup="listbox" aria-controls="color-menu" aria-expanded="false"><span class="fake-menu-button__button-text">Black</span></button>
+        <button aria-label="Clear selection" id="color-clear">Clear selection</button>
+        <div id="color-menu" role="listbox">
+          <button role="option" aria-selected="true">Black</button>
+          <button role="option" aria-selected="false">Blue</button>
+        </div>
+      </div>
+    </div>
+    <div data-testid="attribute" id="row-season">
+      <div class="summary__attributes--label"><label class="field__label">Season</label></div>
+      <div class="summary__attributes--value">
+        <button id="season-control" name="attributes.Season" aria-haspopup="listbox" aria-controls="season-menu" aria-expanded="false"><span class="fake-menu-button__button-text">Select</span></button>
+        <div id="season-menu" role="listbox">
+          <button role="menuitemcheckbox" aria-checked="false">Spring</button>
+          <button role="menuitemcheckbox" aria-checked="false">Summer</button>
+          <button role="menuitemcheckbox" aria-checked="false">Fall</button>
+          <button role="menuitemcheckbox" aria-checked="false">Winter</button>
+        </div>
+      </div>
+    </div>
+    <div data-testid="attribute" id="row-handmade">
+      <div class="summary__attributes--label"><label class="field__label">Handmade</label></div>
+      <div class="summary__attributes--value">
+        <button id="handmade-yes" aria-pressed="false">Yes</button>
+        <button id="handmade-no" aria-pressed="false">No</button>
+      </div>
+    </div>
+    <div data-testid="attribute" id="row-upc">
+      <div class="summary__attributes--label"><label class="field__label">UPC</label></div>
+      <div class="summary__attributes--value"><input name="attributes.UPC" value="123456789012"></div>
+    </div>
+  </div>
+</section>
+<script>
+(function () {
+  function setupSingle(controlId, menuId, clearId) {
+    const control = document.getElementById(controlId);
+    const menu = document.getElementById(menuId);
+    const text = control.querySelector('.fake-menu-button__button-text');
+    control.addEventListener('click', () => {
+      const open = control.getAttribute('aria-expanded') !== 'true';
+      control.setAttribute('aria-expanded', open ? 'true' : 'false');
+      menu.style.display = open ? 'block' : 'none';
+    });
+    menu.querySelectorAll('[role="option"]').forEach(option => option.addEventListener('click', () => {
+      menu.querySelectorAll('[role="option"]').forEach(item => item.setAttribute('aria-selected', 'false'));
+      option.setAttribute('aria-selected', 'true');
+      text.textContent = option.textContent.trim();
+      control.setAttribute('aria-expanded', 'false');
+      menu.style.display = 'none';
+    }));
+    if (clearId) document.getElementById(clearId).addEventListener('click', () => {
+      menu.querySelectorAll('[role="option"]').forEach(item => item.setAttribute('aria-selected', 'false'));
+      text.textContent = 'Select';
+    });
+  }
+  setupSingle('brand-control', 'brand-menu');
+  setupSingle('color-control', 'color-menu', 'color-clear');
+
+  const seasonControl = document.getElementById('season-control');
+  const seasonMenu = document.getElementById('season-menu');
+  const seasonText = seasonControl.querySelector('.fake-menu-button__button-text');
+  function syncSeason() {
+    const selected = Array.from(seasonMenu.querySelectorAll('[role="menuitemcheckbox"][aria-checked="true"]')).map(x => x.textContent.trim());
+    seasonText.textContent = selected.length ? selected.join(', ') : 'Select';
+  }
+  seasonControl.addEventListener('click', () => {
+    const open = seasonControl.getAttribute('aria-expanded') !== 'true';
+    seasonControl.setAttribute('aria-expanded', open ? 'true' : 'false');
+    seasonMenu.style.display = open ? 'block' : 'none';
+  });
+  seasonMenu.querySelectorAll('[role="menuitemcheckbox"]').forEach(option => option.addEventListener('click', () => {
+    option.setAttribute('aria-checked', option.getAttribute('aria-checked') === 'true' ? 'false' : 'true');
+    syncSeason();
+  }));
+
+  const yes = document.getElementById('handmade-yes');
+  const no = document.getElementById('handmade-no');
+  [yes, no].forEach(button => button.addEventListener('click', () => {
+    yes.setAttribute('aria-pressed', button === yes ? 'true' : 'false');
+    no.setAttribute('aria-pressed', button === no ? 'true' : 'false');
+  }));
+})();
+</script>
+</body>
+</html>

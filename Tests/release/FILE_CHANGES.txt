@@ -1,0 +1,13 @@
+V8.23.21 substantive changes:
+- Extension/manifest.json — Vinted host permissions, early drop match, isolated Vinted photo-only destination runtime, version bump.
+- Extension/platforms/common.js — Vinted platform detection/label.
+- Extension/platforms/photo_drop_early.js — Vinted document-start drop capture.
+- Extension/platforms/photo_transfer.js — Vinted uploader discovery, 20-photo cap, destination verification, user-facing drag copy.
+- Extension/ui/photo-transfer/photo-transfer.js — Vinted destination wording.
+- Extension/background.js — Vinted recognized as an explicitly supported marketplace URL.
+- Tests/regression/photo_drag_transfer.py — Vinted manifest/runtime/transfer invariants.
+- Tests/regression/marketplace_adapters.py — Vinted detection while keeping Smart Fill isolated.
+- Tests/integration/photo_drag_transfer_dom.py — 7-photo Vinted upload/verification regression.
+- Tests/release/release.py — Vinted host and isolated-runtime release gates.
+- Docs/README.md, Docs/ARCHITECTURE.md, Docs/CHANGELOG.md — V8.23.21 behavior documented.
+- Production/test version identities synchronized to 8.23.21.

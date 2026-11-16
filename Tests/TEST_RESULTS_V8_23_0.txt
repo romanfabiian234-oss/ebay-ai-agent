@@ -1,0 +1,72 @@
+V8.23.0 TEST RESULTS
+====================
+
+RESULT: RELEASE-CRITICAL CHECKS PASS
+
+NON-BROWSER UNIT / REGRESSION GROUP: PASS (21)
+- single shared Fill Engine / writer lock
+- marketplace shared Fill Engine + protected fields
+- deterministic exact matching / field policy
+- Fast Fill support contract
+- photo evidence policy
+- root-cause accuracy guards
+- single page message router
+- real draft evidence regressions
+- evidence accuracy / cache / final-state stability
+- Depop/Poshmark HTML/adapters/safety
+- stable photo-transfer architecture invariants
+- final-state save guard
+- simple structure / router / writer invariants
+- control window route and sizing
+- terminal setup model
+- persistent state / stale DOM / hotkeys
+- Keychain setup persistence
+- first-run START behavior
+- interactive terminal setup
+- Native Messaging exact-origin / device-only Keychain
+- hotkey lifecycle
+
+BROWSER / RELEASE GROUP: PASS
+1. Chromium photo transfer integration
+   PASS: single-shot Depop input
+   PASS: delayed Poshmark Covershot modal
+   PASS: initially-disabled Covershot Apply becoming enabled
+   PASS: exact Apply commit
+   PASS: selected eBay photo order
+   PASS: delayed native selection counter sync
+   PASS: 11-photo lazy gallery recovery
+
+2. Chromium real DOM Fill integration
+   PASS: exact single select
+   PASS: multi-select
+   PASS: Yes/No
+   PASS: Clear
+   PASS: UPC protection
+   PASS: stale-row safety
+
+3. Release gate
+   PASS: 27 JavaScript syntax checks
+   PASS: manifest/version consistency
+   PASS: Native Messaging
+   PASS: device-only Keychain credential boundary
+   PASS: terminal setup
+   PASS: protected fields/actions
+   PASS: secret scan
+
+STATIC AUDIT
+- Production JS/Python source files scanned: 30
+- Approx production source LOC: 34,891
+- Unexpected text control-character files: 0
+- Late destination drop owners: 0
+- Early destination drop owners: 1
+- Removed runtime-conflicting tokens:
+  dispatchDropFiles = absent
+  UPLOAD_BATCH_SIZE = absent
+  hasFrameworkAttachment = absent
+  uploadFilesInBatches = absent
+  uploadMethodsFor = absent
+  marketplaceAiLastPhotoTransfer = absent
+  signatureKey = absent
+
+NOTE
+The sandbox can intermittently stall when the two Playwright suites are chained after the entire long test sequence in one parent process. Every unit/regression check passes as a clean non-browser group, and all browser/release-critical checks pass as a clean separate group. No release-critical assertion is failing.

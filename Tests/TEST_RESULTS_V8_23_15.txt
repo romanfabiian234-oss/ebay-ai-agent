@@ -1,0 +1,55 @@
+TEST RESULTS — V8.23.15
+
+Status: constituent unit/regression and Chromium integration checks pass in the available environment. Real macOS Vision/Core Image behavior still requires the user's Mac/eBay validation.
+
+New V8.23.15 coverage:
+- Tests/unit/ocr_cv_pipeline.test.js — PASS.
+  * generic 7-photo gallery is scanned by local Fast OCR even with no pre-labelled evidence role.
+  * a mid-gallery label is discovered and receives one bounded Accurate retry.
+  * focus comes from text geometry or machine-vision label rectangle.
+  * contrast/sharpen preprocessing metadata is preserved.
+  * Fast + Accurate blocks are merged and repeated evidence keeps consensus votes.
+  * care-symbol tokens are routing hints only, not direct product facts.
+- Tests/regression/ocr_cv_architecture.py — PASS.
+  * local gallery cap = 12.
+  * macOS Vision rectangle detection contract exists.
+  * Core Image contrast/sharpen helper exists.
+  * consensus metadata survives backend merge.
+  * paid GPT photo caps remain independently protected by existing AI cost regression.
+- Tests/unit/shoe_ocr_direct_facts.test.js — PASS.
+  * direct shoe facts remain confidence/evidence gated.
+  * explicitly incomplete virtualized option snapshots can defer narrow direct facts to live Fill verification.
+  * empty options with unknown completeness remain blocked.
+  * 2E resolves to live EE only when the live menu yields one unique deterministic alias match.
+  * weak OCR, absent known options and GPT↔OCR conflicts remain safe.
+
+Existing AI/OCR/cost checks observed PASS:
+- fast_local_ocr_verification.test.js
+- fast_local_ocr_pipeline.test.js
+- ai_cost_optimization.test.js
+- ai_repair_efficiency.test.js
+- fast_strict_verification.test.js
+- smart_strict_verification.test.js
+- API cost and transport accounting
+
+Core/regression checks observed PASS:
+- shared Fill / marketplace safety / matching / evidence
+- Queue stability / Queue transition
+- message router / real draft evidence
+- marketplace adapters / photo-transfer architecture
+- final-state / simple structure / dead-code / UI ownership
+- popup scope / Control Panel / setup / persistence / Native Messaging / hotkeys
+
+Chromium integration checks:
+- real_dom_fill.py — PASS.
+- show_more_readiness.py — PASS.
+- ui_containers_dom.py — PASS.
+- photo_drag_transfer_dom.py — PASS.
+
+Aggregate runner note:
+- Tests/run_tests.py completed through three Chromium scenarios before the execution environment time limit. The remaining photo_drag_transfer_dom.py and the new OCR/CV tests were executed separately and passed. Release gate — PASS: 72 production JS syntax checks, Native Messaging, device-only Keychain credential, terminal setup, protected fields, and secret scan.
+
+Real validation still required:
+- macOS Vision rectangle detection and Core Image contrast/sharpen transforms cannot be executed in this Linux test environment. Their failure path is best-effort and falls back to the existing original/crop OCR path.
+- Run V8.23.15 on the same Aravon-style shoe label and a difficult care/material label. Confirm direct label completeness, one-primary-GPT normal path, and no increase in OpenAI request count/cost.
+- Care pictogram semantics are not claimed as locally verified in V8.23.15; only readable text/tokens and label routing are used safely.

@@ -1,0 +1,48 @@
+TEST RESULTS — V8.23.18
+
+Status: PASS in the available automated environment. Real macOS/eBay/API validation is still required to measure the actual reduction in billed requests/tokens on the same products used for V8.23.17.
+
+New/updated Problem 2.5 regressions:
+- Tests/unit/local_evidence_engine.test.js — PASS.
+  * justified repair reason codes are deterministic;
+  * no-direct-evidence fields do not spend a repair call;
+  * strong cross-photo Brand/whole-item Material OCR can independently validate;
+  * Model remains same-photo-only.
+- Tests/unit/micro_repair_contract.test.js — PASS.
+  * large live option catalogs are summarized instead of copied into repair prompt;
+  * small exact vocabularies remain available;
+  * only requested repair fields exist in the repair JSON schema;
+  * HIGH-detail repair evidence is preserved;
+  * safe GPT-5.x output headroom is preserved.
+- Tests/unit/repair_telemetry.test.js — PASS.
+  * per-request fields, repair reason codes, evidence photo IDs and HIGH-detail counts survive the usage ledger;
+  * provider token/cost record survives completion;
+  * diagnostics expose per-field reasons and per-analysis-run request/token/cost grouping.
+- Tests/unit/fast_local_ocr_verification.test.js — PASS with the V8.23.18 Local Evidence policy.
+  * high-confidence deterministic cross-photo facts may stay single-pass;
+  * low-confidence/conflicting evidence remains blocked/repair-safe.
+
+Deterministic prompt-size comparison:
+- V8.23.17 synthetic Country(244)+Material(52) strict-repair prompt: 2,432 chars (~608 rough text tokens).
+- V8.23.18 same contract: 949 chars (~238 rough text tokens).
+- Reduction: ~61% for that text portion. This is not a billed-token claim; actual image/token billing must be measured in the real OpenAI run.
+
+Existing AI/OCR/cost/matching/fill/Queue/marketplace/safety regressions: PASS.
+
+Full aggregate run:
+- Tests/run_tests.py passed all unit/regression/backend checks and the Chromium `real_dom_fill` + `show_more_readiness` scenarios before the command execution limit was reached.
+- `ui_containers_dom.py` — rerun separately, PASS.
+- `photo_drag_transfer_dom.py` — rerun separately, PASS.
+- `Tests/release/release.py` — PASS after all edits: 72 production JS syntax checks plus Python/shell syntax, Native Messaging, Keychain, protected-field and secret-scan gates.
+
+Not claimed as real validation:
+- No live OpenAI request was made from this environment.
+- No live eBay/macOS Vision run was made from this environment.
+- The exact real-world V8.23.18 $/item and 1-vs-2-request frequency must be confirmed by the user's next browser test.
+
+Final ZIP verification:
+- ZIP integrity (`unzip -t`) — PASS.
+- Internal `Tests/release/SHA256_FILES.txt` verified 194 packaged source/test files — PASS.
+- No packaged `__pycache__`, `.pyc` or `.DS_Store` — PASS.
+- Freshly extracted ZIP reran Local Evidence Engine, micro-repair, repair telemetry, local OCR pipeline, AI cost guard and Chromium real DOM Fill — PASS.
+- Freshly extracted ZIP reran `Tests/release/release.py` — PASS.

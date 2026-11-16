@@ -1,0 +1,44 @@
+/* Control panel: viewport-aware by default; content.js may override the two
+   CSS variables from the saved Auto/Preset/Custom size setting. */
+#ebay-ai-control-panel {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 2147483647;
+  width: var(--ebaic-panel-width, clamp(380px, 36vw, 520px));
+  height: var(--ebaic-panel-height, clamp(520px, 86vh, 780px));
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 24px);
+  overflow: hidden;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 16px;
+  background: #f7f2e8;
+  box-shadow: 0 18px 55px rgba(0,0,0,.32);
+  color: #30271f;
+  font: 13px/1.35 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+#ebay-ai-control-panel *,
+#ebay-ai-control-panel *::before,
+#ebay-ai-control-panel *::after { box-sizing: border-box; }
+#ebay-ai-control-panel .ebaic-header {
+  flex: 0 0 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 9px 6px 12px;
+  border-bottom: 1px solid rgba(48,39,31,.14);
+  background: #efe5d5;
+}
+#ebay-ai-control-panel .ebaic-title { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 14px; }
+#ebay-ai-control-panel .ebaic-close {
+  appearance: none; width: 32px; min-width: 32px; height: 32px; padding: 0; border: 0; border-radius: 9px;
+  background: transparent; color: #5d5044; font: 700 22px/32px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; cursor: pointer;
+}
+#ebay-ai-control-panel .ebaic-close:hover { background: rgba(48,39,31,.08); }
+#ebay-ai-control-panel .ebaic-frame { display:block; flex:1 1 auto; width:100%; min-width:0; min-height:0; border:0; background:#f7f2e8; }
+@media (max-width:360px) { #ebay-ai-control-panel { left:12px; right:12px; width:auto; max-width:none; } }
+@media (max-height:460px) { #ebay-ai-control-panel { top:10px; bottom:10px; height:auto; max-height:none; } }

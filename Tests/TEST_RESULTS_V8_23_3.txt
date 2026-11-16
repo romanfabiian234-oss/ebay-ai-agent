@@ -1,0 +1,49 @@
+TEST RESULTS — V8.23.3
+
+Queue Show More Readiness target
+- PASS: Item Specifics readiness re-checks for a Show more control that appears after the initial rows.
+- PASS: delayed Show more at 650 ms is detected and opened before the snapshot returns.
+- PASS: `aria-label="Show more item specifics"` with visible text `Show more` is recognized inside the Item Specifics section.
+- PASS: snapshot waits for Show less / expanded-field evidence and final field stability.
+- PASS: hidden Theme and Character fields are present in the final AI field list.
+- PASS: first ignored click receives exactly one bounded retry.
+- PASS: `collectFieldMap({expand:true})` uses the same late-hydration readiness gate.
+- PASS: when both bounded expansion clicks fail, the field map throws instead of silently returning a partial visible-only map.
+
+Queue regressions
+- PASS: V8.23.2 runId + draftId transition ticket behavior remains intact.
+- PASS: duplicate/stale transition events remain rejected.
+- PASS: V8.23.1 budget/auth/backend blockers remain queue-wide blockers and preserve pending drafts.
+
+Core regression
+- PASS: shared Fill Engine, exact single-select, multi-select, Yes/No and writer lock.
+- PASS: marketplace safety preserves eBay protected fields.
+- PASS: exact matching and field policy.
+- PASS: Fast Fill support contract.
+- PASS: photo evidence and root-cause evidence guards.
+- PASS: single page router and UPC/MPN protection.
+- PASS: real-draft evidence regressions.
+- PASS: Depop/Poshmark adapter contracts and no-publish protections.
+- PASS: final-state stability, simple structure, Control Panel, setup/storage, Native Messaging and hotkey lifecycle.
+
+Integration
+- PASS: Chromium real DOM Fill: exact single, multi, Yes/No, Clear, UPC protection and stale-row safety.
+- PASS: Chromium Show More readiness: late hydration, accessibility-label variant, expanded hidden fields, one bounded retry and partial-map refusal.
+- PASS: Chromium photo transfer: Depop single-shot input, Poshmark Covershot commit, delayed eBay selection sync, ordered payload and lazy-photo recovery.
+
+Release gate
+- PASS: 27 production JavaScript syntax checks.
+- PASS: Python syntax checks.
+- PASS: manifest/version consistency.
+- PASS: Native Messaging and device-only Keychain boundary.
+- PASS: protected action/field scan.
+- PASS: secret scan.
+
+Combined runner note
+- `Tests/run_tests.py` passed every unit/regression step, Chromium real DOM Fill and the new Show More integration test, then the known combined Playwright lifecycle issue caused the long runner to time out before the photo/release steps completed.
+- The Chromium photo-transfer test and release gate were run separately and passed.
+- This pre-existing test-runner lifecycle issue was intentionally not mixed into the Show More production patch.
+
+Live browser status
+- NOT YET VERIFIED against a logged-in real eBay Queue in this environment.
+- Required manual acceptance: run 2–3 real drafts with visible Show more and confirm expansion happens before Reading/Analyzing completes and hidden fields are included.

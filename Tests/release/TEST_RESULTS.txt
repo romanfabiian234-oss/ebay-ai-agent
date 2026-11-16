@@ -1,0 +1,32 @@
+TEST RESULTS — V8.23.21
+
+Status: PASS for the Vinted photo-transfer scope in the available automated environment.
+
+Focused regressions — PASS:
+- Tests/regression/photo_drag_transfer.py
+  * Vinted host permissions present;
+  * early drop receiver remains the single drop owner;
+  * Vinted uses an isolated photo-only runtime (no Smart Fill/content.js);
+  * Vinted uploader discovery and 20-photo cap are present.
+- Tests/regression/marketplace_adapters.py
+  * Vinted platform detection is present while Depop/Poshmark remain the field-fill adapters.
+
+Chromium integration — PASS:
+- Tests/integration/photo_drag_transfer_dom.py
+  * Depop single-shot upload still passes;
+  * Poshmark Covershot commit still passes;
+  * Vinted 7-photo native file-input upload passes with exactly one change event and 7 verified preview nodes;
+  * Vinted destination reports a 20-photo limit;
+  * eBay selected-photo drag ordering and delayed selection sync still pass.
+
+Full suite:
+- The aggregate runner passed all unit/regression/security/setup tests through the Chromium UI integration tail before the outer execution ceiling stopped the single long-running process.
+- The remaining photo-transfer Chromium integration and the release gate were then run separately and both passed.
+
+Release gate — PASS:
+- Tests/release/release.py
+- 72 production JavaScript syntax checks
+- Native Messaging / Keychain / protected-field / secret-scan checks
+
+Not claimed as real validation:
+- No authenticated live Vinted `/items/new` browser test was possible in this environment. The next manual check should open a Vinted new listing and drag 1–7 eBay photos onto the page, confirming previews appear in the correct order.

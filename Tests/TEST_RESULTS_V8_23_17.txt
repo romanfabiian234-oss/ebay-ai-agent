@@ -1,0 +1,25 @@
+TEST RESULTS — V8.23.17
+
+Status: PASS in the available automated environment. Real macOS/eBay validation is still required for the exact Adrianna Papell regional size label because macOS Vision/Core Image and the live eBay page cannot be executed here.
+
+New regressions:
+- Tests/unit/regional_size_ocr.test.js — PASS.
+  * USA 14 / UK 18 / EUROPE 44 resolves generic eBay Size to US 14 only.
+  * no-US regional table does not infer/convert a US Size.
+  * conflicting US rows are blocked.
+  * weak split OCR evidence is blocked.
+  * strong physical-tag US Size with incomplete compact options survives to live exact verification.
+  * Primary GPT can remain one request when local regional Size recovery succeeds before repair.
+- Tests/unit/diagnostic_highres.test.js — PASS.
+  * eBay thumbnail URLs upgrade to canonical high-resolution forms.
+  * non-eBay and local data URLs are not promoted.
+  * debug export uses the current V8.23.17 identity.
+
+Existing AI/OCR/cost/matching/fill/Queue/marketplace regressions: PASS.
+Chromium real DOM scenarios are run as part of the full suite; if the aggregate environment reaches its execution limit they are rerun individually before release.
+Release gate includes JS/Python/shell syntax, Native Messaging, device-only Keychain, protected-field checks and secret scan.
+
+Final aggregate run:
+- Full Tests/run_tests.py passed all unit/regression/backend checks and real_dom_fill, show_more_readiness, ui_containers_dom before the execution environment hit its command time limit.
+- photo_drag_transfer_dom.py was then run separately — PASS.
+- release.py was rerun separately after all edits — PASS (72 production JS syntax checks plus Python/shell/security gates).

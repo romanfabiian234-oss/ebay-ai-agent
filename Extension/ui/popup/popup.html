@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Marketplace AI Listing Filler V8.23.21</title>
+<link href="popup.css" rel="stylesheet"/>
+</head>
+<body data-theme="light">
+<header>
+<h1>Marketplace AI Agent V8.23.21 <span class="badge">Safe Fill</span></h1>
+<p>AI analysis, Queue, local Review Assistant and Item Specifics only • No Publish</p>
+<p class="hint">Mac shortcuts: ⌃⇧A Autopilot · ⌃⇧Q Queue Start/Stop · ⌃⇧R Review · ⌃⇧O Control Window · ⌃⇧X Clear All Item Specifics · ⌃⇧F Fill All Ready · Esc Safe Stop.</p>
+</header>
+<nav class="tabs">
+<button class="tab active" data-tab="aiTab">AI</button><button class="tab" data-tab="reviewTab">Review</button>
+
+
+<button class="tab" data-tab="listingTab">Fields</button>
+<button class="tab" data-tab="settingsTab">Settings</button>
+<button class="tab hidden" data-tab="logsTab">Logs</button>
+</nav>
+<main>
+<section class="tabPanel active" id="aiTab">
+<div class="card">
+<h2>Workflow Mode</h2>
+<p class="hint">AI Mode and Text Mode are separate. Use AI for photo analysis, or switch to Text Mode when API is OFF / failed.</p>
+<label>Mode
+          <select id="workflowMode">
+<option value="hybrid">Hybrid: AI + Text fallback</option>
+<option value="ai">AI Photos only</option>
+<option value="text">Text Import only</option>
+</select>
+</label>
+<div class="row wrap">
+<button class="primary" id="switchAiModeBtn">AI Mode</button>
+<button id="switchTextModeBtn">Text Mode</button>
+<button class="hidden" id="switchHybridModeBtn" type="button">Hybrid</button>
+</div>
+<div class="statusBox" id="workflowStatusBox">Mode status will appear here.</div>
+</div>
+<div class="card">
+<div class="photoSourceTitle">
+<h2>Photos for AI</h2>
+<span class="sourceTag" id="photoCountTag">0 photos</span>
+</div>
+<p class="hint">V8.23.21 reads product photos and the exact listing fields from the current eBay, Depop, or Poshmark page. Click the × on any thumbnail to remove it from AI analysis.</p>
+<div class="row wrap">
+<button class="primary" id="readEbayPhotosBtn">Read Photos + Listing Fields</button>
+<button class="hidden" id="captureVisibleBtn" type="button">Capture Visible Area</button>
+<button class="red" id="clearPhotosBtn" type="button">Remove All Photos</button>
+</div>
+<label>Upload clothing / product photos
+          <input accept="image/*" id="photoInput" multiple="" type="file"/>
+</label>
+<div class="sourceBar" id="photoSourceBar">
+<span class="sourceTag">Upload: 0</span>
+<span class="sourceTag">eBay: 0</span>
+<span class="sourceTag">Screenshot: 0</span>
+</div>
+<div class="photoGrid" id="photoPreview"></div>
+<div class="reportBox" id="photoReadReport">No photos loaded yet.</div>
+</div>
+<div class="card">
+<h2>Analyze</h2>
+<p class="hint">One primary GPT analysis answers only the selected Item Specific questions; at most one small targeted repair may recheck important missing label evidence. Clear product photos control visible appearance; strict facts stay blank without direct evidence. Description, Condition, price and title are not requested or changed.</p>
+<div class="row wrap">
+<button class="primary" id="analyzeBtn">Answer Item Specifics</button>
+<button aria-pressed="false" class="green hidden" id="webResearchToggleBtn" type="button">Internet Research: OFF</button>
+<button class="hidden" id="analyzeEbayBtn" type="button">Analyze eBay Photos</button>
+<button class="green hidden" id="fillOneFromAiBtn" type="button">One-Button Fill eBay</button>
+</div>
+<div class="statusBox" id="apiStatusBox">API status not checked.</div>
+<div class="statusBox" id="costEstimateBox">Cost estimate will appear before analysis.</div>
+</div><div class="card embeddedSection" id="aiQueueCard">
+<div class="photoSourceTitle">
+<h2>AI Queue</h2>
+<span class="sourceTag" id="queueCountTag">0 selected</span>
+</div>
+<p class="hint">Select draft checkboxes in Seller Hub → Listings → Drafts, then press Start. Every selected draft is processed automatically in order.</p>
+<div class="statusBox" id="queueRunnerStatus">Select drafts and press Start.</div>
+<div class="queuePopupList" id="queuePopupList"></div>
+<div class="queueSimpleActions">
+<button class="green" id="startQueueBtn" type="button">Start</button>
+<button class="red hidden" id="stopQueueBtn" type="button">Stop</button>
+<button id="clearQueueBtn" type="button">Clear</button>
+</div>
+<p class="simpleOnlyNote">Only Item Specifics are filled. Title, Condition, Description, Price, Quantity and Publish are never touched. Fields that cannot be filled are left for your review after the queue finishes.</p>
+</div>
+<div class="card hidden">
+<h2>Photo Checklist</h2>
+<p class="hint">Before AI: basic count/source checks. After AI: uses API checklist if the model returns it.</p>
+<div class="checklist" id="photoChecklist"></div>
+</div>
+<div class="card">
+<h2>Paste Item Specific Answers</h2>
+<p class="hint">Use the same simple format as GPT: one exact eBay question and answer per line.</p>
+<textarea class="bigTextarea" id="chatgptText" placeholder="Color - Pink\nBrand - Faherty\nSize - M\nDepartment - Women"></textarea>
+<div class="row two">
+<button id="pasteClipboardBtn">Paste</button>
+<button class="primary" id="importBtn">Import Text</button>
+</div>
+</div>
+<details class="card collapsibleCard" id="questionsDetails"><summary class="collapsibleSummary"><span class="collapsibleTitle">Questions sent to GPT</span><span class="sourceTag" id="selectedQuestionsCountTag">0/0 selected</span></summary><div class="collapsibleBody"><p class="hint">These are the exact Item Specific questions currently found on the eBay page. Remove a question to stop sending it to GPT. Your choice is saved.</p><div class="row wrap">
+<button class="primary" id="refreshQuestionsBtn" type="button">Reload from eBay</button>
+<button id="includeAllQuestionsBtn" type="button">Add All</button>
+</div><div class="questionList" id="includedQuestionsList"></div><div class="statusBox" id="noIncludedQuestions">No current Item Specific questions found.</div><details class="nestedDetails" id="removedQuestionsDetails"><summary class="nestedSummary"><span>Removed questions</span><span class="sourceTag" id="excludedQuestionsCountTag">0 removed</span></summary><div class="nestedBody"><p class="hint">Legacy list only. Fast Fill, Autopilot and Queue always use all current Item Specifics except UPC/MPN.</p><div class="questionList" id="excludedQuestionsList"></div><div class="statusBox" id="noExcludedQuestions">No questions removed.</div></div></details></div></details></section><section class="tabPanel" id="reviewTab">
+<div class="card">
+<div class="photoSourceTitle">
+<h2>Local Review Folder</h2>
+<span class="sourceTag" id="reviewDatabaseTag">Checking…</span>
+</div>
+<p class="hint">Choose any folder on this Mac. Each analyzed listing is saved as one separate JSON file inside that folder. Review files never contain API keys, cookies, OAuth tokens, or payment data.</p>
+<div class="statusBox" id="reviewDatabasePath">Checking local review folder…</div>
+<div class="row wrap">
+<button class="primary" id="chooseReviewFolderBtn" type="button">Choose Review Folder</button>
+<button id="refreshReviewDatabaseBtn" type="button">Refresh</button>
+</div>
+</div>
+<div class="card">
+<div class="photoSourceTitle">
+<h2>Current Item Review</h2>
+<span class="sourceTag" id="reviewCurrentStatusTag">Not loaded</span>
+</div>
+<p class="hint">Open an eBay draft, then load its saved AI answers and compare them with the values currently shown on the page.</p>
+<div class="statusBox" id="reviewCurrentItemBox">Open an eBay draft and press Load Current Item.</div>
+<div class="reviewSummaryChips" id="reviewSummaryChips"></div>
+<label>Show fields
+      <select id="reviewFilter">
+<option value="needs_attention">Needs attention</option>
+<option value="all">All fields</option>
+<option value="suggested">Suggested / likely</option>
+<option value="changed">Changed by user</option>
+<option value="confirmed">Confirmed</option>
+</select>
+</label>
+<div class="row wrap">
+<button class="primary" id="runReviewAnalysisBtn" type="button">Run Review Analysis</button>
+<button id="loadCurrentReviewBtn" type="button">Load Current Item</button>
+<button class="green" id="enableReviewAssistantBtn" type="button">Open Review Assistant</button>
+<button id="disableReviewAssistantBtn" type="button">Close Assistant</button>
+</div>
+<div class="reviewFieldList" id="reviewFieldList"></div>
+<div class="statusBox" id="reviewNoFields">No saved review record for this item yet. Run Review Analysis first.</div>
+</div>
+<div class="card">
+<div class="photoSourceTitle">
+<h2>Review Queue</h2>
+<span class="sourceTag" id="reviewItemsCountTag">0 items</span>
+</div>
+<p class="hint">Shows locally saved items. This mode never clicks List, Publish, Delete, or changes protected listing sections.</p>
+<div class="reviewItemList" id="reviewItemList"></div>
+<div class="statusBox" id="reviewNoItems">No analyzed items saved yet.</div>
+</div>
+</section>
+
+
+<section class="tabPanel" id="listingTab">
+<div class="card">
+<div class="photoSourceTitle">
+<h2>Listing Fields</h2>
+<span class="sourceTag" id="itemSpecificsCountTag">0 fields</span>
+</div>
+<p class="hint" id="itemSpecificsPageHint">Open an eBay, Depop, or Poshmark listing to load its current fields.</p>
+<div class="dynamicSpecificsGrid" id="dynamicSpecificsFields"></div>
+<div class="statusBox" id="noItemSpecificsFields">No listing fields loaded yet. Click “Read Photos + Listing Fields”.</div>
+<!-- Legacy storage fields stay hidden so existing saved data and Helper messages remain compatible. -->
+<div aria-hidden="true" class="hidden">
+<label>Profile
+          <select id="profile">
+<option>General</option>
+<option>Clothing / Tops</option>
+<option>Swimwear</option>
+<option>Shoes</option>
+<option>Bags / Handbags</option>
+<option>Dresses</option>
+<option>Jackets / Coats</option>
+</select>
+</label>
+<label>Existing eBay Title (preserved — AI does not create or change it) <span class="counter" id="titleCount">0/80</span>
+<input id="title" maxlength="120" placeholder="Existing eBay title" readonly="" type="text"/>
+</label>
+<div class="grid2">
+<label>Brand<input id="brand" type="text"/></label>
+<label>Size<input id="size" type="text"/></label>
+<label>Color<input id="color" type="text"/></label>
+<label>Condition
+            <select id="condition">
+<option value="">Select</option>
+<option>New with tags</option>
+<option>New without tags</option>
+<option>Pre-owned - Excellent</option>
+<option>Pre-owned - Good</option>
+<option>Needs Review</option>
+</select>
+</label>
+<label>Price<input id="price" inputmode="decimal" placeholder="24.99" type="text"/></label>
+<label>Qty<input id="quantity" min="1" type="number" value="1"/></label>
+</div>
+<label>Condition Note<textarea class="smallTextarea" id="conditionDescription"></textarea></label>
+<label>Description<textarea id="description"></textarea></label>
+<label>Item Specifics<textarea class="smallTextarea" id="specifics" placeholder="Department: Women\nType: Top\nStyle: Basic\nOccasion: Casual, Party/Cocktail, Travel"></textarea></label>
+<details>
+<summary>More fields</summary>
+<label>Suggested Price<input id="suggestedPrice" type="text"/></label>
+<label>Category<input id="category" type="text"/></label>
+<label>Measurements<textarea class="smallTextarea" id="measurements"></textarea></label>
+<label>Shipping<textarea class="smallTextarea" id="shipping"></textarea></label>
+<label>AI Warnings<textarea class="smallTextarea" id="aiWarnings"></textarea></label>
+</details>
+<div class="warnings" id="warnings"></div>
+<div class="preview" id="preview"></div>
+</div>
+<div class="row wrap">
+<button class="primary hidden" id="fillOneBtn" type="button">One-Button Fill eBay</button>
+<button class="red hidden" id="stopActionsBtn" type="button">Stop Actions</button>
+<button class="primary wideButton" id="marketplaceFillAllBtn" type="button">Fill All Current Listing</button>
+<button class="primary wideButton" id="enableHoverAssistantBtn">Enable Listing Helper</button>
+<button class="hidden" id="disableHoverAssistantBtn" type="button">Hide Helper</button>
+<button class="hidden" id="saveBtn" type="button">Save</button>
+<button class="red hidden" id="clearFormBtn" type="button">Clear</button>
+</div>
+<div class="reportBox" id="fillReportBox">Fill All works on eBay, Depop, and Poshmark. For Depop/Poshmark, transfer the product photos first; the extension never publishes the listing.</div>
+</div>
+</section>
+<section class="tabPanel" id="settingsTab">
+<div class="card" id="unifiedApiCard">
+<h2>Local Connections</h2>
+<p class="hint">START.command installs a private Chrome Native Messaging connection automatically. API keys stay in macOS Keychain; the extension never stores a pairing secret.</p>
+<div class="row wrap">
+<button id="checkUnifiedConnectionsBtn" type="button">Check Connections</button>
+</div>
+<div class="statusBox" id="unifiedApiStatusBox">Checking Native Messaging, Backend, and saved Keychain status…</div>
+<div class="setupStatusGrid" aria-label="Local setup status">
+  <div class="setupStatusItem"><b>Settings</b><span id="settingsSavedStatusBox" data-state="info">Loading…</span></div>
+  <div class="setupStatusItem"><b>Native Backend</b><span id="backendStatusBox" data-state="info">Checking…</span></div>
+  <div class="setupStatusItem"><b>GPT Key</b><span id="gptKeyStatusBox" data-state="info">Checking…</span></div>
+</div>
+<hr class="divider"/>
+<h3>GPT / Compatible AI API</h3>
+<div class="presetRow">
+<label>Preset
+            <select id="apiPreset">
+<option value="custom">Custom / Any compatible API</option>
+<option value="openai-quality">OpenAI-compatible Quality</option>
+<option value="openai-cheap">OpenAI-compatible Cheap</option>
+<option value="openrouter">OpenRouter-compatible</option>
+<option value="local-proxy">Local proxy on this Mac</option>
+</select>
+</label>
+<button class="miniButton" id="applyPresetBtn">Apply</button>
+</div>
+<p class="hint">Presets fill the address format only. The GPT registration fields and request logic remain unchanged.</p>
+<label class="checkRow">
+<input id="apiEnabled" type="checkbox"/>
+<span>API enabled</span>
+</label>
+<label>API Mode
+          <select id="apiMode">
+<option value="openai-compatible">OpenAI-compatible vision/chat endpoint</option>
+<option value="custom-json">Custom JSON endpoint</option>
+<option value="local-proxy">Local proxy / custom local server</option>
+<option value="off">Off / manual import only</option>
+</select>
+</label>
+<label>Base URL
+          <input id="apiBaseUrl" placeholder="https://api.example.com" type="text"/>
+</label>
+<div class="grid2">
+<label>Path
+            <input id="apiPath" placeholder="/v1/chat/completions" type="text"/>
+</label>
+<label>Model
+            <input id="apiModel" placeholder="vision-model-name" type="text"/>
+</label>
+</div>
+<label>API Key
+          <input id="apiKey" placeholder="Paste key only on your own Mac" type="password"/>
+</label>
+<div class="grid2">
+<label>Auth Header
+            <input id="authHeader" placeholder="Authorization" type="text"/>
+</label>
+<label>Auth Prefix
+            <input id="authPrefix" placeholder="Bearer" type="text"/>
+</label>
+</div>
+<label>Custom Headers JSON
+          <textarea class="smallTextarea" id="customHeaders" placeholder='{"HTTP-Referer":"...","X-Title":"eBay Filler"}'></textarea>
+</label>
+<label class="checkRow">
+<input disabled="" id="saveApiKey" type="checkbox"/>
+<span>GPT API key stored securely in macOS Keychain</span>
+</label>
+<div class="dangerNote">On a new Mac, run <b>START.command</b> once. The Terminal setup saves normal settings in Application Support and secrets only in macOS Keychain. Use <b>START.command --setup</b> or Tools/settings.command to change them later.</div>
+<div class="row wrap">
+<button class="primary" id="saveSettingsBtn" type="button">Save GPT Settings &amp; Key</button>
+<button id="testApiBtn">Test GPT API</button>
+<button class="red" id="clearSensitiveBtn">Remove GPT Key</button>
+<button id="resetSettingsBtn">Reset GPT Settings</button>
+</div>
+<div class="statusBox" id="settingsStatus">GPT settings not tested yet.</div>
+<hr class="divider"/>
+<h3>Claude Targeted Reviewer</h3>
+<p class="hint">Review Mode only: Claude can check weak or conflicting Item Specifics. Normal Photo, Autopilot and Queue never wait for Claude. The key stays in macOS Keychain.</p>
+<label class="checkRow"><input id="claudeReviewEnabled" type="checkbox"/><span>Enable Claude targeted review</span></label>
+<div class="grid2">
+<label>Claude model<input id="claudeModel" type="text" value="claude-sonnet-5"/></label>
+<label>Maximum reviewed fields<input id="claudeMaxFields" type="number" min="0" max="12" step="1" value="10"/></label>
+</div>
+<div class="grid2">
+<label>Reviewer output tokens<input id="claudeMaxOutputTokens" type="number" min="600" max="6000" step="100" value="3000"/></label>
+<label>Reviewer timeout (ms)<input id="claudeTimeoutMs" type="number" min="25000" max="90000" step="1000" value="45000"/></label>
+</div>
+<label>Review verification policy<select id="reviewFillMode"><option value="safe">Safe — strongest verified values</option><option value="review_assisted">Review Assisted — include likely values for inspection</option><option value="complete_coverage">Complete Coverage — show every valid candidate in Review</option></select></label>
+<label>Claude API Key<input id="claudeApiKey" placeholder="Paste Claude key only on your own Mac" type="password"/></label>
+<label class="checkRow"><input disabled id="claudeKeyStored" type="checkbox"/><span>Claude API key stored securely in macOS Keychain</span></label>
+<div class="row wrap"><button class="primary" id="saveClaudeKeyBtn" type="button">Save Claude Key</button><button class="red" id="removeClaudeKeyBtn" type="button">Remove Claude Key</button></div>
+<div class="statusBox" id="claudeStatusBox">Claude reviewer is not configured yet.</div>
+<!-- Legacy import/export controls remain hidden for backward compatibility. -->
+<button class="hidden" id="exportApiSettingsBtn" type="button">Export API File</button>
+<button class="hidden" id="importApiSettingsBtn" type="button">Import API File</button>
+<input accept="application/json,.json" class="hidden" id="apiSettingsFileInput" type="file"/>
+<hr class="divider"/>
+<h3>eBay API — Read Only</h3>
+<p class="hint">The eBay connection can read account privileges only. It cannot create, edit, delete, or publish listings.</p>
+<div class="grid2">
+<label>Environment
+            <select id="ebayProfileEnvironment">
+<option value="production">Production</option>
+<option value="sandbox">Sandbox</option>
+</select>
+</label>
+<label>Client ID (App ID)
+            <input autocomplete="off" id="ebayProfileClientId" placeholder="Production App ID" spellcheck="false" type="text"/>
+</label>
+</div>
+<label>OAuth RuName
+          <input autocomplete="off" id="ebayProfileRuname" placeholder="Production RuName" spellcheck="false" type="text"/>
+</label>
+<label>Client Secret (Cert ID)
+          <input autocomplete="new-password" id="ebayProfileClientSecret" placeholder="Enter only to save or replace in macOS Keychain" spellcheck="false" type="password"/>
+</label>
+<div class="statusBox" id="ebayProfileStorageBox">eBay profile not loaded yet.</div>
+<div class="row wrap">
+<button id="checkUnifiedConnectionsBtn" type="button">Check Both Connections</button>
+<button class="primary" id="ebayOauthAuthorizeBtn" type="button">Authorize eBay</button>
+<button class="green" id="ebayOauthReadBtn" type="button">Read Account</button>
+<button class="red" id="ebayOauthDisconnectBtn" type="button">Disconnect eBay</button>
+<button class="red" id="ebayRemoveCredentialsBtn" type="button">Remove eBay Credentials</button>
+</div>
+<div class="statusBox" id="ebayOauthStatusBox">The compatible backend starts automatically with macOS. Pair V8.23.21 once, then save both APIs.</div>
+<div class="reportBox oauthData" id="ebayOauthDataBox">No eBay account data loaded.</div>
+<!-- Legacy eBay controls remain hidden for backward compatibility. -->
+<button class="hidden" id="ebayProfileSaveBtn" type="button">Save eBay Profile</button>
+<button class="hidden" id="ebaySecretSaveBtn" type="button">Save Secret to Keychain</button>
+<button class="hidden" id="ebayProfileExportBtn" type="button">Export Profile</button>
+<button class="hidden" id="ebayProfileImportBtn" type="button">Import Profile</button>
+<input accept="application/json,.json" class="hidden" id="ebayProfileFileInput" type="file"/>
+<button class="hidden" id="ebayOauthCheckBtn" type="button">Check Backend</button>
+</div>
+<div class="card">
+<h2>Work Settings</h2>
+<h3>Control Panel Size</h3>
+<p class="hint">Auto follows the current eBay page size. Presets and Custom stay inside the visible page so the panel cannot run off-screen.</p>
+<div class="grid2">
+<label>Panel size
+            <select id="panelSizeMode">
+<option value="auto">Auto — fit current eBay page</option>
+<option value="compact">Compact — 340 × 520</option>
+<option value="medium">Medium — 420 × 640</option>
+<option value="large">Large — 500 × 760</option>
+<option value="custom">Custom</option>
+</select>
+</label>
+<label>Theme
+            <select id="themeMode">
+<option value="dark">Dark</option>
+<option value="light">Light</option>
+<option value="auto">Auto</option>
+</select>
+</label>
+<label>Image max size
+            <select id="imageMaxSide">
+<option value="1024">1024 px</option>
+<option value="1280">1280 px</option>
+<option value="1600">1600 px</option>
+<option value="2048">2048 px</option>
+</select>
+</label>
+</div>
+<div class="grid2 panelCustomSizeFields" id="panelCustomSizeFields">
+<label>Custom width
+            <input id="panelCustomWidth" min="320" max="700" step="10" type="number"/>
+</label>
+<label>Custom height
+            <input id="panelCustomHeight" min="420" max="900" step="10" type="number"/>
+</label>
+</div>
+<div class="row two">
+<button class="primary" id="savePanelSizeBtn" type="button">Apply &amp; Save Size</button>
+<button id="resetPanelSizeBtn" type="button">Reset to Auto</button>
+</div>
+<div class="statusBox" id="panelSizeStatus">Auto size follows the current eBay page.</div>
+<hr class="divider"/>
+<label class="checkRow"><input checked="" id="exactOnly" type="checkbox"/> <span>Exact-only dropdown filling</span></label>
+<label class="checkRow"><input id="autoReadEbayPhotos" type="checkbox"/> <span>Auto-read eBay photos when popup opens on eBay</span></label>
+<label class="checkRow hidden"><input id="webResearchEnabled" type="checkbox"/> <span>Internet Research disabled in Item Specifics-only mode</span></label>
+<label class="checkRow hidden"><input id="autoFillDescriptionCondition" type="checkbox"/> <span>Description and Condition filling disabled</span></label>
+<p class="hint">Normal Photo, Autopilot and Queue run local macOS Vision OCR before GPT to identify real label evidence and add compact, untrusted hints to the primary request. After the primary GPT pass, a missing direct label fact may be recovered locally only when the field is allowlisted, OCR evidence is strong, and the value exactly matches the current eBay options. Visual/ambiguous facts stay GPT-owned, and OCR never overwrites a conflicting GPT answer. Conflicts or rejected strict evidence keep one bounded GPT repair; weak or unsupported missing fields stay blank instead of causing speculative paid retries.</p>
+<label class="checkRow"><input checked="" disabled="" id="neverPublish" type="checkbox"/> <span>Never click Publish / List it / Pay / Delete</span></label>
+<label>Custom AI instruction
+          <textarea class="smallTextarea" id="customAiInstruction" placeholder="Optional extra rules for your store"></textarea>
+</label>
+</div>
+<div class="card">
+<h2>AI Response Length &amp; Budget</h2>
+<div class="grid2">
+<label>Token Saver Mode
+            <select id="tokenMode">
+<option value="cheap">Cheap</option>
+<option value="balanced">Balanced</option>
+<option value="quality">Quality</option>
+</select>
+</label>
+<label>Max photos/request
+            <input id="maxPhotosPerRequest" max="10" min="1" step="1" type="number"/>
+</label>
+<label>Max output tokens
+            <input id="maxOutputTokens" max="12000" min="1200" step="100" type="number"/>
+</label>
+<label>Image quality
+            <select id="imageQuality">
+<option value="0.72">Low / cheapest</option>
+<option value="0.82">Balanced</option>
+<option value="0.9">High</option>
+</select>
+</label>
+</div>
+<label class="checkRow"><input id="cacheEnabled" type="checkbox"/> <span>Use AI result cache when same photos are analyzed again</span></label>
+<label class="checkRow"><input id="smartPhotoSelection" type="checkbox"/> <span>Smart photo selection / duplicate cleanup</span></label>
+<div class="grid2">
+<label>Warn if one item costs over $
+            <input id="warnItemCost" min="0" step="0.01" type="number"/>
+</label>
+<label>Daily budget $
+            <input id="dailyBudget" min="0" step="0.01" type="number"/>
+</label>
+<label>Monthly budget $
+            <input id="monthlyBudget" min="0" step="0.01" type="number"/>
+</label>
+<label>Input $ / 1M tokens
+            <input id="inputCostPer1M" min="0" step="0.01" type="number"/>
+</label>
+<label>Output $ / 1M tokens
+            <input id="outputCostPer1M" min="0" step="0.01" type="number"/>
+</label>
+</div>
+<div class="statusBox" id="budgetStatusBox">Budget status not calculated yet.</div>
+<p class="hint">Normal Fill has a hard OpenAI ceiling of 2 upstream requests: exactly one Primary plus at most one targeted Repair. Local OCR/CV runs first. A strongly readable local label stays LOW-detail in Primary because the Local Evidence Engine can verify/recover its direct facts for free; weak or conflicting label evidence is promoted to HIGH-detail, and any Repair re-reads only the exact unresolved evidence at HIGH detail. Missing strict fields with no direct evidence are not retried. Paid Primary photo caps remain Cheap 4 / Balanced 6 / Quality 8. The normal per-item cost target is $0.07 or less, but accuracy is fail-safe: unresolved facts are left for review rather than buying a third GPT call. Review Mode is separate and may additionally use Claude. Daily and monthly API budgets remain hard limits.</p>
+</div>
+<div class="card">
+<h2>Debug Collector</h2>
+<p class="hint">Use this when Next / Back / menu / answer status behaves wrong. First open the problem on eBay, then choose what to collect and download one JSON file.</p>
+<div class="row wrap">
+<button class="primary" id="exportDomBtn">Open Debug Collector</button>
+<button class="green" id="downloadDebugBundleBtn">Download Selected Debug File</button>
+<button class="red" id="clearActionLogBtn">Clear Action Log</button>
+</div>
+<div class="debugGrid" id="debugCollectorPanel">
+<label class="checkRow"><input checked="" id="diagActionLog" type="checkbox"/> <span>Action log: Next / Back / Fill / helper open</span></label>
+<label class="checkRow"><input checked="" id="diagHelperState" type="checkbox"/> <span>Current helper state</span></label>
+<label class="checkRow"><input checked="" id="diagRoute" type="checkbox"/> <span>Item Specifics route map</span></label>
+<label class="checkRow"><input checked="" id="diagFields" type="checkbox"/> <span>Visible field candidates</span></label>
+<label class="checkRow"><input checked="" id="diagOpenMenus" type="checkbox"/> <span>Open dropdown/menu details</span></label>
+<label class="checkRow"><input checked="" id="diagCheckedRows" type="checkbox"/> <span>Checked / selected rows</span></label>
+<label class="checkRow"><input checked="" id="diagYesNoRows" type="checkbox"/> <span>Yes / No and two-choice rows</span></label>
+<label class="checkRow"><input checked="" id="diagActiveElement" type="checkbox"/> <span>Active focused element</span></label>
+<label class="checkRow"><input checked="" id="diagPerformance" type="checkbox"/> <span>Performance / route timings</span></label>
+<label class="checkRow"><input checked="" id="diagErrors" type="checkbox"/> <span>Extension errors / warnings</span></label>
+<label class="checkRow"><input checked="" id="diagPageInfo" type="checkbox"/> <span>Page info / URL / viewport</span></label>
+<label class="checkRow"><input id="diagStorage" type="checkbox"/> <span>Safe local extension storage keys</span></label>
+<label class="checkRow"><input id="diagVisibleText" type="checkbox"/> <span>Visible page text</span></label>
+<label class="checkRow"><input id="diagCompactHtml" type="checkbox"/> <span>Compact HTML snippets</span></label>
+</div>
+<div class="statusBox" id="domExportStatus">Debug collector ready. Usually keep the checked options only.</div>
+</div>
+<div class="card">
+<h2>V8.23.21 Security &amp; Diagnostics</h2>
+<p class="hint">Local proxy mode is safest because API key can stay outside Chrome storage. Debug export never includes API key.</p>
+<div class="row wrap">
+<button class="primary" id="runDiagnosticsBtn">Run Diagnostics</button>
+<button id="exportDebugBtn">Export Debug File</button>
+<button class="red" id="clearUsageBtn">Clear Usage</button>
+</div>
+<div class="statusBox" id="diagnosticsBox">Diagnostics not run yet.</div>
+</div>
+</section>
+<section class="tabPanel" id="logsTab">
+<div class="card">
+<h2>V8.23.21 Usage History</h2>
+<p class="hint">Local ledger uses provider-reported token usage and current standard model pricing when available. OpenAI Dashboard remains the final billed total.</p>
+<div class="statusBox" id="usageSummaryBox">No usage data yet.</div>
+<div class="logBox" id="usageHistoryBox">No API usage yet.</div>
+</div>
+<div class="card">
+<h2>Draft History</h2>
+<div class="logBox" id="draftHistoryBox">No draft history yet.</div>
+</div>
+<div class="card">
+<h2>Logs</h2>
+<div class="row wrap">
+<button id="copyLogsBtn">Copy Logs</button>
+<button class="red" id="clearLogsBtn">Clear Logs</button>
+</div>
+<div class="logBox" id="logBox">No logs yet.</div>
+</div>
+</section>
+</main>
+<footer id="status">Ready.</footer>
+<script src="../registry/registry.js"></script>
+<script src="../../shared/config.js"></script>
+<script src="../../shared/text_utils.js"></script>
+<script src="../../shared/app_state.js"></script>
+<script src="../../shared/messages.js"></script>
+<script src="../../shared/logger.js"></script>
+<script src="../../shared/usage.js"></script>
+<script src="../../shared/storage.js"></script>
+<script src="../../shared/events.js"></script>
+<script src="../../shared/panel_preferences.js"></script>
+<script src="../../shared/settings_policy.js"></script>
+<script src="../../shared/connections.js"></script>
+<script src="../../shared/diagnostics.js"></script>
+<script src="../../shared/photo_state.js"></script>
+<script src="../../shared/question_preferences.js"></script>
+<script src="../../shared/draft_state.js"></script>
+<script src="../../core/policy.js"></script>
+<script src="../../core/snapshot.js"></script>
+<script src="../../core/ai.js"></script>
+<script src="../../core/match.js"></script>
+<script src="../../core/verify.js"></script>
+<script src="../../core/fill.js"></script>
+<script src="../../core/save.js"></script>
+<script src="../../core/text_parser.js"></script>
+<script src="../../core/review_model.js"></script>
+<script src="../../modes/photo.js"></script>
+<script src="../../modes/text.js"></script>
+<script src="../../modes/queue.js"></script>
+<script src="../../modes/review.js"></script>
+<script src="../../modes/photo_selection.js"></script>
+<script src="../../modes/queue_controls.js"></script>
+<script src="../../modes/fill_actions.js"></script>
+<script src="../../modes/settings.js"></script>
+<script src="../../modes/review_workspace.js"></script>
+<script src="../../modes/diagnostics.js"></script>
+<script src="../../modes/connections.js"></script>
+<script src="../../modes/text_workspace.js"></script>
+<script src="../../modes/popup_controller.js"></script>
+<script src="../../modes/popup_sync.js"></script>
+<script src="../../modes/manual_analysis.js"></script>
+<script src="../status/status.js"></script>
+<script src="../theme/theme.js"></script>
+<script src="../photo-selection/view.js"></script>
+<script src="state.js"></script>
+<script src="../queue-controls/queue-controls.js"></script>
+<script src="../diagnostics/diagnostics.js"></script>
+<script src="../settings/settings.js"></script>
+<script src="../photo-selection/photo-selection.js"></script>
+<script src="../text-import/text-import.js"></script>
+<script src="../connections/connections.js"></script>
+<script src="../fill-actions/fill-actions.js"></script>
+<script src="../review/review.js"></script>
+<script src="popup.js"></script>
+</body>
+</html>

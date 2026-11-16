@@ -1,0 +1,73 @@
+TEST RESULTS — V8.23.4
+Patch: AI Repair Efficiency
+
+RESULT: PASS for static/unit/regression/integration/release checks listed below.
+LIVE OPENAI/EBAY LATENCY: NOT YET VERIFIED — requires the user's real eBay/API run.
+
+NEW REGRESSION
+PASS  Tests/unit/ai_repair_efficiency.test.js
+- representative recovery instructions: 17,900 -> 7,958 characters (~55.5% smaller)
+- strict-field selection unchanged
+- ordinary visual Color remains single-pass
+- Balanced recovery reasoning remains MEDIUM
+- recovery image detail remains HIGH
+- verificationLimit remains 40
+- recovery evidence-photo limit remains 5
+- seller-title/current-value anchoring remains excluded
+- UPC/MPN and commerce-action safety remain present
+
+CORE / ACCURACY
+PASS  Tests/unit/root_cause_accuracy.test.js
+PASS  Tests/unit/fast_fill_support.test.js
+PASS  Tests/unit/photo_evidence_policy.test.js
+PASS  Tests/unit/fill_engine.test.js
+PASS  Tests/unit/marketplace_fill_engine.test.js
+PASS  Tests/unit/match_policy.test.js
+PASS  Tests/regression/real_draft_evidence.test.js
+PASS  Tests/regression/evidence_accuracy.py
+PASS  Tests/regression/state_and_safety.py
+
+QUEUE
+PASS  Tests/unit/queue_stability.test.js
+PASS  Tests/unit/queue_transition_stability.test.js
+PASS  Tests/regression/message_router.test.js
+
+MARKETPLACE / PHOTO / UI / SETUP
+PASS  Tests/regression/marketplace_adapters.py
+PASS  Tests/regression/photo_drag_transfer.py
+PASS  Tests/regression/final_state_stability.py
+PASS  Tests/regression/simple_structure.py
+PASS  Tests/regression/csp_and_control_window.py
+PASS  Tests/regression/setup_startup.py
+PASS  Tests/regression/setup_persistence.py
+PASS  Tests/regression/first_run_start.py
+PASS  Tests/regression/terminal_setup.py
+PASS  Tests/regression/native_messaging.py
+PASS  Tests/regression/hotkey_lifecycle.py
+
+REAL CHROMIUM INTEGRATION
+PASS  Tests/integration/real_dom_fill.py
+PASS  Tests/integration/show_more_readiness.py
+PASS  Tests/integration/photo_drag_transfer_dom.py
+
+RELEASE / SECURITY
+PASS  Tests/release/release.py
+- 27 production JavaScript syntax checks
+- Backend Python syntax
+- shell syntax
+- Native Messaging / Keychain boundary
+- protected eBay fields
+- no <all_urls>
+- no downloads permission
+- no credential-looking production literals
+- no automatic publish/delete/payment path added
+
+KNOWN TEST-RUNNER NOTE
+The long aggregate Tests/run_tests.py has an existing Playwright lifecycle/teardown instability in this environment. The individual unit, regression, Chromium integration, and release gates above were therefore executed directly and completed successfully. V8.23.4 does not change that test-runner infrastructure.
+
+MANUAL CHECK RECOMMENDED
+Run Queue on 3-5 real eBay drafts and compare the new displayed timings:
+- Primary GPT
+- Strict verification
+- AI total
+Confirm answer quality remains the same while strict-verification time/tokens improve.

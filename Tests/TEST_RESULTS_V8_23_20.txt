@@ -1,0 +1,52 @@
+TEST RESULTS — V8.23.20
+
+Status: PASS for the changed OCR/direct-label/single-flight/release scope in the available automated environment. A real macOS/eBay/OpenAI run is still required to confirm physical OCR behavior and actual billed $/item.
+
+New V8.23.20 regressions:
+- Tests/unit/direct_label_live_recovery.test.js — PASS.
+  * CASHMERE physical-label context preserves standalone Size M;
+  * partial/virtualized Brand catalog allows strong J.CREW physical OCR to defer to live exact verification;
+  * complete catalog mismatch remains blocked;
+  * numeric Size 00/0 and narrow P/W/T forms are deterministic while arbitrary identifiers are not treated as size;
+  * 100% Cashmere specificity requires direct physical percentage evidence;
+  * end-to-end Charter Club M/100% Cashmere and J.Crew Size 0 stay one Primary request before live Fill verification.
+- Tests/unit/analysis_singleflight.test.js — PASS.
+  * identical concurrent analysis calls share one paid Primary request;
+  * different drafts remain independent;
+  * failure releases the guard and a later explicit retry is allowed.
+- Tests/regression/hidden_action_audit.py — PASS.
+  * OpenAI backend proxy has one upstream call and no retry loop;
+  * automatic startup/Queue Test API caller absent;
+  * legacy AI_ANALYZE_PHOTOS has no production caller outside compatibility wrapper;
+  * normal analysis disables transport compatibility retry and remains <=2 OpenAI attempts;
+  * local OCR/CV does not route through the paid compatibility path.
+
+Related existing unit/regression suites — PASS:
+- Fill Engine / marketplace Fill / matching / field policy.
+- Fast Fill support, evidence policy, root-cause accuracy.
+- AI repair efficiency, hard request budget, adaptive Vision detail.
+- Local Evidence Engine, micro-repair contract, repair telemetry.
+- Fast/Smart strict verification.
+- Fast local OCR verification and full OCR pipeline.
+- Shoe direct facts, regional sizes, diagnostic high-res, OCR/CV architecture.
+- API cost/transport accounting.
+- Queue stability/transitions, message router, marketplace adapters, setup/security/state/structure/dead-code gates.
+
+Chromium integration:
+- Tests/integration/real_dom_fill.py — PASS.
+- Tests/integration/show_more_readiness.py — PASS.
+- Tests/integration/ui_containers_dom.py — PASS.
+- Photo Transfer DOM scenario — PASS in an equivalent instrumented invocation of the same test body/assertions. Repeated direct invocations were timing-sensitive in this container and could hit the external execution timeout; no production photo-transfer code was changed by V8.23.20.
+
+Aggregate runner:
+- Unit/regression/backend block passed through Native Messaging before the container execution ceiling interrupted the aggregate Chromium tail. Slow Chromium cases were therefore checked separately as above.
+
+Release gate:
+- Tests/release/release.py — PASS after final functional changes.
+- 72 production JavaScript syntax checks — PASS.
+- Python/shell syntax, Native Messaging, Keychain boundary, protected fields and secret scan — PASS.
+
+Not claimed as real validation:
+- No live OpenAI request from this environment.
+- No live eBay/macOS Vision test from this environment.
+- The next real browser test should verify Brand/Size/100% Material completeness, 1-vs-2 request frequency and actual provider-billed cost.

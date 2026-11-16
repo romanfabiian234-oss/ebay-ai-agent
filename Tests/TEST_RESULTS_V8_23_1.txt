@@ -1,0 +1,40 @@
+TEST RESULTS — V8.23.1
+
+Queue Stability target
+- PASS: daily budget is a structured queue-wide blocker.
+- PASS: monthly budget is a structured queue-wide blocker.
+- PASS: HTTP 401/authentication failures classify as queue-wide blockers.
+- PASS: HTTP 429/rate-limit failures classify as queue-wide blockers.
+- PASS: ordinary field/DOM failures remain per-item failures.
+- PASS: blocked current draft stays pending instead of becoming an error.
+- PASS: unchanged blocked Queue has a resume path from the same current draft.
+- PASS: specific Fill failure messages take precedence over generic summaries.
+- PASS: Control Panel exposes the exact per-draft error/block message.
+- PASS: in-page Queue exposes the exact per-draft error/block message.
+
+Core regression
+- PASS: shared Fill Engine, exact single-select, multi-select, Yes/No and writer lock.
+- PASS: marketplace safety preserves eBay protected fields.
+- PASS: exact matching and field policy.
+- PASS: Fast Fill support contract.
+- PASS: photo evidence and root-cause evidence guards.
+- PASS: single page router and UPC/MPN protection.
+- PASS: real-draft evidence regressions.
+- PASS: Depop/Poshmark adapter contracts and no-publish protections.
+- PASS: final-state stability, simple structure, Control Panel, setup/storage, Native Messaging.
+- PASS: hotkey lifecycle when run independently.
+- PASS: Chromium real DOM Fill when run independently.
+- PASS: Chromium photo transfer assertions when run independently.
+
+Release gate
+- PASS: 27 production JavaScript syntax checks.
+- PASS: Python/shell syntax checks.
+- PASS: manifest/version consistency.
+- PASS: Native Messaging and device-only Keychain boundary.
+- PASS: protected action/field scan.
+- PASS: secret scan.
+
+Environment note
+- `Tests/run_tests.py` executed all unit/regression checks through Native Messaging successfully in this environment, but the long combined command exceeded the tool timeout before completing the remaining browser/release steps.
+- The remaining hotkey, Chromium DOM Fill, Chromium photo-transfer assertions and release gate were run separately and passed.
+- The known Playwright teardown/lifecycle issue in the full combined runner was not changed in this Queue-only patch.

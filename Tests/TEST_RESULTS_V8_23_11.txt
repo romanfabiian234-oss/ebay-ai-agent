@@ -1,0 +1,21 @@
+TEST RESULTS — V8.23.11
+
+Status: PASS for all 38 configured test steps when completed across the available execution windows.
+
+Automatic checks:
+- 33 unit/regression/setup/security steps before Chromium integrations: PASS.
+- Chromium real DOM Fill: PASS.
+- Chromium Show More readiness: PASS.
+- Chromium UI ownership: PASS.
+- Chromium Photo Transfer: PASS (run separately after the combined runner reached the external execution limit).
+- Release/security gate: PASS; 71 production JS syntax checks plus Native Messaging, Keychain boundary, protected-field and secret scans.
+- Dead-code regression gate: PASS.
+- Helper static reachability: 222 functions reachable from 5 active roots; 0 unreachable declarations.
+- Message catalog audit: 24 catalog routes; no low-use/senderless catalog entry detected.
+- Production JS file reference audit: 70 JS files; 0 files without a production load/reference path.
+
+Combined runner note:
+The combined Tests/run_tests.py invocation completed the first 36 steps with PASS before the surrounding execution call reached its time limit. The remaining Photo Transfer integration test and release gate were then executed separately and both returned PASS. Standalone Photo Transfer completes normally (about 24 seconds in this environment).
+
+Browser scope:
+The Chromium tests exercise local deterministic/mock DOM scenarios. A live authenticated eBay website session was not available in this environment, so live-site behavior is not claimed as fully confirmed.

@@ -1,0 +1,32 @@
+TEST RESULTS — V8.23.7
+
+PASS — reliable API cost accounting unit test
+- Responses usage: uncached/cached/cache-write/output separation
+- Chat Completions prompt/completion detail aliases
+- reasoning tokens are not double charged
+- GPT-5.6 >272K long-context pricing
+- in-flight/transport-unknown estimate reservation
+- explicit 4xx zero-cost handling without provider usage
+- uncertain 5xx conservative reservation
+- item summaries do not double-count request spend
+
+PASS — AI transport accounting integration-style unit test
+- one request ledger record per upstream request
+- client request ID forwarded to secure Backend
+- provider/proxy/client request IDs retained
+- provider token details replace the preflight reservation
+- budget summary uses completed calculated request cost
+- API secret is not copied into the browser proxy payload
+
+PASS — complete non-browser unit/regression suite: 28 tests
+PASS — real Chromium DOM Fill
+PASS — Chromium Show More readiness
+PASS — Chromium photo transfer assertions
+PASS — release/security gate: 28 production JS syntax checks, Backend Python, shell syntax, Native Messaging/Keychain boundary, protected fields/actions, secret scan
+
+KNOWN TEST INFRASTRUCTURE ISSUE
+When multiple Playwright Chromium integration scripts are chained in one parent process, the existing photo-transfer script can print PASS but keep a Playwright/Chromium teardown handle alive until the outer runner timeout. The three Chromium assertion suites were therefore verified separately. This is the pre-existing test-runner lifecycle issue and is not changed in this accounting patch.
+
+NOT CLAIMED
+- No live OpenAI request was made by the test suite, so no money was spent to validate billing.
+- The local ledger is not claimed to be OpenAI's invoice/billing API. Real-world reconciliation against OpenAI Dashboard is required after installing V8.23.7.

@@ -1,0 +1,51 @@
+TEST RESULTS — V8.23.16
+
+Status: PASS in the available automated environment. Real macOS/eBay validation is still required for the exact UNIQLO-style label path because macOS Vision/Core Image and the live eBay page cannot be executed here.
+
+Confirmed root-cause regression:
+- Tests/unit/fast_local_ocr_pipeline.test.js — PASS.
+  * strong physical-tag `XS` with `options=[]` + `optionsComplete=false` recovers locally after Primary GPT;
+  * no second GPT repair is issued for that Size;
+  * existing missing-fact, conflict and rejected-evidence repair behavior remains intact.
+- Tests/unit/match_policy.test.js — PASS.
+  * local `confirmed_by_tag` OCR Size may defer to live Fill when the compact catalog is explicitly incomplete;
+  * ordinary GPT Size under the same incomplete catalog remains blocked;
+  * complete-catalog exact matching/ambiguity rules remain unchanged.
+- Tests/unit/fill_engine.test.js — PASS.
+  * `XS` is filled only when the shared Fill Engine finds the exact live option and verifies the selected value.
+
+All unit tests — PASS:
+- AI cost/repair/strict verification
+- API cost + transport accounting
+- Fill/matching/policy
+- local OCR verification/pipeline
+- OCR/CV pipeline and shoe direct facts
+- Queue stability/transition
+
+All regression tests — PASS:
+- evidence/root-cause guards
+- marketplace adapters / message router / real draft evidence
+- photo transfer architecture
+- UI ownership / popup scope / Control Panel
+- state/final-state/dead-code/simple structure
+- setup/Keychain/Native Messaging/hotkeys
+
+Chromium integration:
+- real_dom_fill.py — PASS
+- show_more_readiness.py — PASS
+- ui_containers_dom.py — PASS
+- photo_drag_transfer_dom.py — PASS when run separately
+
+Aggregate integration note:
+- the combined Chromium command completed the first three scenarios, then the execution environment hit its time limit and Playwright reported EPIPE. `photo_drag_transfer_dom.py` was rerun alone and passed; this is not a production failure.
+
+Release gate:
+- 72 production JS syntax checks — PASS
+- Backend Python/shell checks — PASS
+- Native Messaging / device-only Keychain — PASS
+- protected-field checks — PASS
+- secret scan — PASS
+
+Real validation requested:
+- Re-run the same UNIQLO U `XS` draft on macOS/eBay. Expected normal path: local OCR recovers `XS` → exactly one Primary GPT request → Match preserves `XS` for live verification → Fill selects exact `XS` → no Size repair request.
+- If OCR itself fails to read `XS`, the existing bounded repair may still run; diagnostics should then identify OCR weakness rather than compact-catalog rejection.

@@ -1,0 +1,24 @@
+#!/usr/bin/env node
+"use strict";
+const fs=require("fs"), vm=require("vm"), path=require("path"), assert=require("assert");
+const ROOT=path.resolve(__dirname,"../..");
+const context={console,URL,Date,Array,Object,String,Boolean,Number,Promise,Map,Set};
+context.globalThis=context;
+vm.createContext(context);
+vm.runInContext(fs.readFileSync(path.join(ROOT,"Extension/modes/diagnostics.js"),"utf8"),context,{filename:"diagnostics.js"});
+assert.strictEqual(typeof context.highResolutionDiagnosticPhotoUrlV82317,"function");
+assert.strictEqual(typeof context.diagnosticPhotoManifestV82317,"function");
+const low="https://i.ebayimg.com/00/s/MTYwMFgxMjAw/z/ABC123/$_2.JPG";
+const high=context.highResolutionDiagnosticPhotoUrlV82317(low);
+assert.strictEqual(high,"https://i.ebayimg.com/00/s/MTYwMFgxMjAw/z/ABC123/$_57.JPG");
+const modern=context.highResolutionDiagnosticPhotoUrlV82317("https://i.ebayimg.com/images/g/abc/s-l225.jpg");
+assert.strictEqual(modern,"https://i.ebayimg.com/images/g/abc/s-l1600.jpg");
+assert.strictEqual(context.highResolutionDiagnosticPhotoUrlV82317("https://example.com/photo.jpg"),"");
+const manifest=Array.from(context.diagnosticPhotoManifestV82317([{photoId:"p4",name:"tag.jpg",role:"size label",url:low},{photoId:"p5",dataUrl:"data:image/jpeg;base64,AA=="}])).map(item=>JSON.parse(JSON.stringify(item)));
+assert.strictEqual(manifest[0].highResAvailable,true);
+assert.strictEqual(manifest[0].highResUrl,high);
+assert.strictEqual(manifest[0].sourceKind,"ebay_high_res");
+assert.strictEqual(manifest[1].highResAvailable,false,"local data must never be embedded as diagnostic URL");
+const source=fs.readFileSync(path.join(ROOT,"Extension/modes/diagnostics.js"),"utf8");
+assert(source.includes("ebay-filler-v8-23-18-debug-"),"debug filename must track current release");
+console.log("PASS V8.23.21 diagnostics preserve canonical high-resolution eBay evidence URLs without embedding local image data");

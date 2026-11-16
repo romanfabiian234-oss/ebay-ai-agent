@@ -1,0 +1,56 @@
+TEST RESULTS — V8.23.2
+
+Queue Transition Stability target
+- PASS: runId + draftId ticket matching is deterministic.
+- PASS: first draft starts only on its own ticket.
+- PASS: duplicate onUpdated/fallback signal for the same active draft is ignored.
+- PASS: stale draft-A event is rejected after Queue state advances to draft B.
+- PASS: valid draft-B event can wait behind the still-finishing draft-A worker and then start.
+- PASS: same behavior verified through a simulated third sequential draft.
+- PASS: a delayed event from an older Queue run cannot wake the same Draft ID in a new run.
+- PASS: Queue advance explicitly schedules the next exact draft.
+- PASS: service-worker resume reopens the persisted expected draft if the reused tab is still on another draft.
+- PASS: fixed 5-second start fallback was removed.
+- PASS: readiness uses lightweight CONTENT_BRIDGE_PING_V890 instead of a blind workflow sleep.
+- PASS: both tab Draft ID and content-document Draft ID must equal the expected draft.
+- PASS: shared Fill Engine readiness is required before ONE_ITEM_PROCESS begins.
+
+V8.23.1 Queue Stability regression
+- PASS: daily/monthly budget blockers remain queue-wide blockers.
+- PASS: auth/rate-limit/backend blockers remain queue-wide.
+- PASS: blocked drafts remain pending and resume is preserved.
+- PASS: ordinary per-item failures remain per-item.
+- PASS: exact per-draft failure messages remain visible.
+
+Core regression
+- PASS: shared Fill Engine, exact single-select, multi-select, Yes/No and writer lock.
+- PASS: marketplace safety preserves eBay protected fields.
+- PASS: exact matching and field policy.
+- PASS: Fast Fill support contract.
+- PASS: photo evidence and root-cause evidence guards.
+- PASS: single page router and UPC/MPN protection.
+- PASS: real-draft evidence regressions.
+- PASS: Depop/Poshmark adapter contracts and no-publish protections.
+- PASS: final-state stability, simple structure, Control Panel, setup/storage, Native Messaging.
+- PASS: hotkey lifecycle.
+
+Integration
+- PASS: Chromium real DOM Fill: exact single, multi, Yes/No, Clear, UPC protection and stale-row safety.
+- PASS: Chromium photo transfer: Depop single-shot input, Poshmark Covershot commit, delayed eBay selection sync, ordered payload and lazy-photo recovery.
+
+Release gate
+- PASS: 27 production JavaScript syntax checks.
+- PASS: Python/shell syntax checks.
+- PASS: manifest/version consistency.
+- PASS: Native Messaging and device-only Keychain boundary.
+- PASS: protected action/field scan.
+- PASS: secret scan.
+
+Combined runner note
+- `Tests/run_tests.py` again reached and passed all unit/regression checks plus Chromium real DOM Fill, but the long combined command timed out before the following Playwright photo/release steps completed.
+- The Chromium photo test and release gate were run separately and passed.
+- This known combined Playwright lifecycle/test-runner issue was intentionally not mixed into the Queue transition production patch.
+
+Live browser status
+- NOT YET VERIFIED against a logged-in real eBay Queue in this environment.
+- Required manual acceptance: run 2–3 real drafts and confirm every navigation starts Reading/Analyzing exactly once.

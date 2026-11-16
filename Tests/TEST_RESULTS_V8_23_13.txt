@@ -1,0 +1,54 @@
+TEST RESULTS — V8.23.13
+
+Status: PASS for all constituent current tests.
+
+AI/OCR/cost regression:
+- fast_local_ocr_pipeline.test.js — PASS
+  * OCR hints assist the primary request but never become blind proof.
+  * valid direct strict support stays single-pass.
+  * OCR conflicts retain bounded GPT repair.
+  * rejected strict candidates retain bounded GPT repair.
+  * repair targets exact OCR/primary evidence photos and does not pad a one-photo re-read with an unrelated second HIGH-detail image.
+  * pure missing strict fields with no direct evidence do not retry.
+- smart_strict_verification.test.js — PASS
+  * validated direct support stays single-pass.
+  * weak/seller-context/unsupported strict evidence remains repairable.
+- ai_repair_efficiency.test.js — PASS
+  * primary/repair instruction contracts remain compact and strict policy is preserved.
+- fast_strict_verification.test.js — PASS
+  * Cheap/Balanced repair reasoning LOW; Quality HIGH; strict recovery photos remain HIGH detail.
+- ai_cost_optimization.test.js — PASS
+  * primary caps 4/6/8 remain enforced.
+  * ordinary Balanced visual photos remain LOW detail.
+  * label evidence remains HIGH detail.
+  * Balanced repair <=2 photos.
+  * speculative no-evidence repair is blocked.
+- evidence_accuracy.py — PASS
+  * evidence-gated verification, cache safety, strict policy and final-state guards remain enforced.
+
+Full functional/regression coverage executed:
+- Fill Engine / matching / marketplace safety — PASS
+- API request usage accounting / transport accounting — PASS
+- Queue stability / transition stability — PASS
+- message router / real draft evidence — PASS
+- marketplace adapters / photo transfer architecture — PASS
+- final-state / simple structure / dead-code / UI ownership — PASS
+- popup scope / Control Panel / setup / persistence / Native Messaging / hotkeys — PASS
+- Chromium real DOM Fill — PASS
+- Chromium Show More readiness — PASS
+- Chromium UI containers — PASS
+- Chromium photo transfer — PASS (executed separately; 24.26s)
+- release.py — PASS (executed separately; 4.15s)
+  * 71 JS syntax checks
+  * Native Messaging
+  * device-only Keychain credential boundary
+  * terminal setup
+  * protected fields
+  * secret scan
+
+Note: Tests/run_tests.py emitted PASS for every step through Chromium UI containers but the aggregate process hit the environment execution timeout before launching/completing its final slow photo-transfer/release steps. Those remaining constituent tests were then run directly and both passed. No failing constituent test remains.
+
+Real browser/API billing validation still required:
+- Compare request count and provider input tokens on the same type of real eBay item.
+- Expected ordinary path: 1 primary GPT request when strict support is valid and there is no OCR conflict/rejected strict candidate/recoverable missing fact.
+- A second request is expected only for a real evidence exception.

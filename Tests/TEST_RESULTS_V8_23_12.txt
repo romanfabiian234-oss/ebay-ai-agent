@@ -1,0 +1,12 @@
+TEST RESULTS — V8.23.12
+
+PASS — all unit tests, including new AI cost optimization guard.
+PASS — all regression tests.
+PASS — Chromium integration: real DOM Fill.
+PASS — Chromium integration: Show More readiness.
+PASS — Chromium integration: UI container ownership.
+PASS — Chromium integration: photo drag transfer.
+PASS — release gate: 71 JavaScript syntax checks, Python/shell syntax, Native Messaging, Keychain, protected fields, permissions and secret scan.
+
+Important limitation:
+Real OpenAI billing/accuracy on live eBay listings cannot be proven by mock/static tests in this environment. V8.23.12 is technically ready for a real browser/API A/B test. Per-request usage telemetry is already present and should be used to compare V8.23.11 vs V8.23.12 on representative listings.

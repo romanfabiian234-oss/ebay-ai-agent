@@ -1,0 +1,43 @@
+TEST RESULTS — V8.23.19
+
+Status: PASS in the available automated environment. Real macOS/eBay/OpenAI validation is still required to measure the actual billed $/item and the real 1-vs-2-request frequency.
+
+Confirmed V8.23.19 cost/stability regressions:
+- Tests/unit/analysis_request_budget.test.js — PASS.
+  * normal Primary/Repair analysis stages cannot use the transport compatibility retry;
+  * one logical product-analysis stage equals one upstream OpenAI attempt;
+  * explicit Test API may use the one compatibility probe;
+  * normal Fill has a hard two-attempt OpenAI analysis budget and fails closed if a future path attempts request 3.
+- Tests/unit/adaptive_vision_detail.test.js — PASS.
+  * strong local direct-label OCR stays LOW detail in Primary;
+  * weak/ambiguous OCR evidence remains HIGH detail;
+  * targeted Repair always re-reads its evidence at HIGH detail.
+- Tests/unit/fast_local_ocr_pipeline.test.js — PASS.
+  * a real OCR↔GPT conflict still uses the one allowed Repair;
+  * the analysis reports 2/2 OpenAI attempts and does not create a third attempt.
+
+Existing Local Evidence, micro-repair, repair telemetry, OCR/CV, regional-size, shoe-label, matching, Fill Engine, Queue, marketplace, safety and API-accounting unit/regression suites — PASS.
+
+Chromium integration tests (run separately to avoid aggregate-runner timeout ambiguity):
+- Tests/integration/real_dom_fill.py — PASS.
+- Tests/integration/show_more_readiness.py — PASS.
+- Tests/integration/ui_containers_dom.py — PASS.
+- Tests/integration/photo_drag_transfer_dom.py — PASS.
+
+Release gate:
+- Tests/release/release.py — PASS after final edits.
+- 72 production JavaScript syntax checks — PASS.
+- Python/shell syntax, Native Messaging, device-only Keychain credential path, terminal setup, protected fields and secret scan — PASS.
+
+Accuracy/cost boundaries verified in code/tests:
+- GPT model unchanged.
+- OCR confidence thresholds unchanged.
+- Paid Primary photo caps unchanged: Cheap 4 / Balanced 6 / Quality 8.
+- Strong local OCR may reduce duplicate Primary HIGH-detail Vision work, but weak/conflicting evidence remains HIGH and Repair evidence is HIGH.
+- Normal Fill has at most one Primary + one Repair OpenAI attempt; unresolved fields stay REVIEW/blank instead of buying request 3.
+- $0.07/item is an operational target and telemetry threshold, not permission to guess or skip required verification.
+
+Not claimed as real validation:
+- No live OpenAI request was made from this environment.
+- No live eBay/macOS Vision run was made from this environment.
+- Actual provider-billed V8.23.19 cost per item must be confirmed by the user's next real browser test.

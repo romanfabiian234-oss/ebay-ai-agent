@@ -1,0 +1,13 @@
+TEST RESULTS — V8.23.10
+
+PASS — unit/regression suite: Fill Engine, marketplace Fill, exact matcher, OCR verification/pipeline, strict verification, AI repair efficiency, API usage/cost accounting, Queue stability/transition, message routing, evidence safety, setup/native messaging/hotkeys.
+PASS — strict UI ownership: no direct chrome/storage/network/persistence APIs in UI; no core/shared → EbayUI dependency; no visible extension DOM creation outside UI; one Progress owner; separated Queue view/controller/DOM adapter; stable popup classic-script scope.
+PASS — Chromium real DOM Fill.
+PASS — Chromium Show More readiness.
+PASS — Chromium UI containers.
+PASS — Chromium photo transfer.
+PASS — release gate: 71 JS syntax checks, Native Messaging, Keychain boundary, protected fields, secret scan.
+
+The combined Tests/run_tests.py produced PASS through the first 35 steps before the execution harness time limit; the remaining Chromium photo-transfer and release-gate steps were then run separately and both passed. No assertion failure remained.
+
+Live marketplace note: automated Chromium fixtures cannot reproduce every future eBay/Depop/Poshmark DOM variation. After installing the patch, refresh already-open marketplace tabs once and verify the Control Panel/Queue/Helper visually on the target Mac.
