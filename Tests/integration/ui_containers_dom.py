@@ -11,7 +11,7 @@ def req(value, message):
 
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(headless=True, executable_path='/usr/bin/chromium', args=['--no-sandbox'])
+    browser = p.chromium.launch(headless=True, args=['--no-sandbox'])
     page = browser.new_page(viewport={'width': 900, 'height': 700})
     page.set_content('<main><footer id="status"></footer><span id="count"></span><div id="sources"></div><div id="checklist"></div></main>')
     for rel in [

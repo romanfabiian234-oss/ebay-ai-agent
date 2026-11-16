@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
+import re
 import json
 ROOT=Path(__file__).resolve().parents[2]
 EXT=ROOT/'Extension'
@@ -7,7 +8,7 @@ FIX=ROOT/'Tests'/'fixtures'
 def req(cond,msg):
     if not cond: raise AssertionError(msg)
 manifest=json.loads((EXT/'manifest.json').read_text())
-req(manifest['version']=='8.23.21','manifest version')
+req(bool(re.fullmatch(r'[0-9]+(?:\.[0-9]+){0,3}', manifest['version'])) and manifest.get('version_name') == manifest['version'],'manifest version')
 main=next(entry for entry in manifest['content_scripts'] if 'content.js' in entry.get('js',[]))
 for host in ['https://depop.com/*','https://*.depop.com/*','https://poshmark.com/*','https://*.poshmark.com/*']:
     req(host in manifest['host_permissions'],f'missing host permission {host}')

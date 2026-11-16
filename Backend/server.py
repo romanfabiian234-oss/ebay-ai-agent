@@ -51,7 +51,18 @@ except Exception:  # Imported only on macOS runtime; syntax tests run cross-plat
 
 #region VERSION, NETWORK LIMITS, AND ROUTES
 # These constants are the single source of truth for backend identity and paths.
-APP_VERSION = "8.23.21"
+def _load_app_version():
+    manifest_path = Path(__file__).resolve().parent.parent / "Extension" / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    version = manifest["version"]
+    if not isinstance(version, str) or not re.fullmatch(r"[0-9]+(?:\.[0-9]+){0,3}", version):
+        raise ValueError("Invalid extension version in manifest.json")
+    if manifest.get("version_name", version) != version:
+        raise ValueError("Extension version and version_name must match")
+    return version
+
+
+APP_VERSION = _load_app_version()
 APP_DISPLAY_VERSION = f"V{APP_VERSION}"
 APP_SERVER_VERSION = APP_VERSION
 

@@ -73,7 +73,7 @@ def fixture(ignore_first_click=False):
     """
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(headless=True, executable_path='/usr/bin/chromium', args=['--no-sandbox'])
+    browser = p.chromium.launch(headless=True, args=['--no-sandbox'])
     page = browser.new_page(viewport={'width': 1200, 'height': 900})
 
     # Scenario 1: Show more is hydrated after the initial rows. Snapshot must

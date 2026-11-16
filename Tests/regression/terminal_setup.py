@@ -37,7 +37,7 @@ with tempfile.TemporaryDirectory() as td:
     mod.SETUP_PROFILE_PATH=app/'agent-setup-profile.json'
     mod.SETUP_COMPLETE_PATH=app/'.setup-complete'
     mod.PAIRING_FALLBACK_PATH=app/'.local-pairing-secret'
-    fake=FakeKeychain(); mod.PERSISTENCE=mod.PersistentEbayProfile(keychain=fake)
+    fake=FakeKeychain(); mod.PERSISTENCE=mod.PersistentEbayProfile(keychain=fake, pairing_keychain=FakeKeychain())
 
     # Keep all defaults, disable optional Claude/eBay configuration, and save a GPT key.
     rc,out=run_setup(['','','','','','','n','n'], ['TEST_ONLY_GPT_SECRET_12345678901234567890'])

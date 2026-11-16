@@ -9,7 +9,7 @@ class FakeKeychain:
     def set(self,s,a,v): self.data[(s,a)]=str(v)
     def delete(self,s,a): self.data.pop((s,a),None)
 with tempfile.TemporaryDirectory() as td:
-    app=Path(td)/'app'; mod.APP_SUPPORT_DIR=app; mod.PROFILE_PATH=app/'ebay-api-profile.json'; mod.SETUP_PROFILE_PATH=app/'agent-setup-profile.json'; mod.SETUP_COMPLETE_PATH=app/'.setup-complete'; mod.PAIRING_FALLBACK_PATH=app/'.local-pairing-secret'; fake=FakeKeychain(); mod.PERSISTENCE=mod.PersistentEbayProfile(keychain=fake)
+    app=Path(td)/'app'; mod.APP_SUPPORT_DIR=app; mod.PROFILE_PATH=app/'ebay-api-profile.json'; mod.SETUP_PROFILE_PATH=app/'agent-setup-profile.json'; mod.SETUP_COMPLETE_PATH=app/'.setup-complete'; mod.PAIRING_FALLBACK_PATH=app/'.local-pairing-secret'; fake=FakeKeychain(); mod.PERSISTENCE=mod.PersistentEbayProfile(keychain=fake, pairing_keychain=FakeKeychain())
     payload={'settings':{'workflowMode':'hybrid','apiPreset':'custom','apiEnabled':True,'apiMode':'openai-compatible','apiBaseUrl':'https://api.openai.com','apiPath':'/v1/responses','apiModel':'gpt-5.6','authHeader':'Authorization','authPrefix':'Bearer','customHeaders':'','saveApiKey':True,'claudeReviewEnabled':False,'claudeModel':'claude-sonnet-5','panelSizeMode':'custom','panelCustomWidth':'510','panelCustomHeight':'730','tokenMode':'balanced','maxPhotosPerRequest':'5'},'apiKey':'TEST_ONLY_GPT_SECRET_1234567890','claudeApiKey':'TEST_ONLY_CLAUDE_SECRET_1234567890','ebay':{'environment':'production','clientId':'test-client','runame':'test-runame'},'ebayClientSecret':'TEST_ONLY_EBAY_SECRET_1234567890'}
     old=sys.stdin; sys.stdin=io.StringIO(json.dumps(payload)); out=io.StringIO()
     try:

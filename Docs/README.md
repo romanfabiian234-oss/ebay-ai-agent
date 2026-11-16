@@ -1,4 +1,6 @@
-# Marketplace AI Listing Filler V8.23.20
+# Marketplace AI Listing Filler — technical background
+
+For current installation, requirements, updates and troubleshooting, use [the project README](../README.md). Versioned sections below describe historical engineering changes; they are not the current release identifier. The current version is in `Extension/manifest.json`.
 
 V8.23.20 continues Problem 2.5 after real V8.23.19 testing reached roughly the $0.07/item target but still missed obvious physical-label facts. The current focus is **accuracy without buying extra GPT work**: direct Brand/Size/Material/Care/Origin facts may cross an incomplete virtualized eBay option snapshot only when they are strongly confirmed by local physical-label OCR; the shared Fill Engine must still open the live control, find the exact option and verify the result.
 

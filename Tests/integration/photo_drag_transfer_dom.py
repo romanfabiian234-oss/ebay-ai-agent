@@ -32,7 +32,7 @@ def payload_js(transfer_id, count):
 
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(headless=True, executable_path='/usr/bin/chromium', args=['--no-sandbox'])
+    browser = p.chromium.launch(headless=True, args=['--no-sandbox'])
 
     # Depop: uploader appears after the transfer starts. All files must be sent
     # through the real multiple file input in one change event (no 4-file batches).

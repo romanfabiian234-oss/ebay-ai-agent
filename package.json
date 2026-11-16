@@ -1,0 +1,6 @@
+{
+  "name": "ebay-ai-agent-checks",
+  "private": true,
+  "description": "Development-only browser test dependency",
+  "devDependencies": {"playwright": "1.58.0"}
+}

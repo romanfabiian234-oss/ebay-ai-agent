@@ -9,7 +9,7 @@ def txt(p): return p.read_text(errors='replace')
 
 manifest=json.loads(txt(EXT/'manifest.json'))
 req(manifest['manifest_version']==3,'manifest must be MV3')
-req(manifest['version']=='8.23.21' and manifest.get('version_name')=='8.23.21','manifest version mismatch')
+req(bool(re.fullmatch(r'[0-9]+(?:\.[0-9]+){0,3}', manifest['version'])) and manifest.get('version_name')==manifest['version'],'manifest version mismatch')
 req('Beta' not in manifest['name'] and 'Beta' not in manifest.get('version_name',''),'current version must not use Beta')
 req('default_popup' not in manifest.get('action',{}),'browser action must not own a second popup viewport')
 for entry in manifest.get('content_scripts',[]):
@@ -150,7 +150,7 @@ for forbidden in ['GPT_API_KEY=','OPENAI_API_KEY=','CLAUDE_API_KEY=','CLIENT_SEC
     req(forbidden not in start,f'START contains secret-like configuration: {forbidden}')
 
 # Backend current version has no Beta identity.
-req('APP_VERSION = "8.23.21"' in server and 'APP_DISPLAY_VERSION = f"V{APP_VERSION}"' in server,'backend display version mismatch')
+req('APP_VERSION = _load_app_version()' in server and 'Extension" / "manifest.json' in server and 'APP_DISPLAY_VERSION = f"V{APP_VERSION}"' in server,'backend display version mismatch')
 req('"panelSizeMode": "auto"' in server and '"panelCustomWidth": "460"' in server and '"panelCustomHeight": "680"' in server,'Backend persistent profile does not preserve panel size settings')
 req('APP_BETA' not in server and '-beta.' not in server,'Beta designation remains in current backend identity')
 
