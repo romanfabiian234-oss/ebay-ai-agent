@@ -1,8 +1,5 @@
 # AI agent instructions — eBay AI Agent
 
-## Shared coding workflow
-For coding and testing, follow [PerfectCode / SKILL.md](https://github.com/romanfabiian234-oss/PerfectCode.md/blob/main/SKILL.md) **when the private repository is accessible**. This is generic quality guidance, not an automatic dependency, a new permission or a replacement for project contracts. Without access, follow the local rules and do not guess the missing contents.
-
 ## Project-specific rules
 - Use [README.md](README.md), [architecture](Docs/ARCHITECTURE.md), [security](Docs/SECURITY.md), [user acceptance](Docs/USER_ACCEPTANCE.md) and the actual source/tests as the operative public project context.
 - Additional [private project rules](https://github.com/romanfabiian234-oss/ebay-ai-agent-project-rules/blob/main/EBAY_AI_AGENT_PROJECT_RULES.md) are authoritative for project-specific decisions **only if the agent is permitted to access them**. Do not copy private contents into this public repository.
